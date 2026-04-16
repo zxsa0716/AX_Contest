@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>최종 분석 방법론 보고서</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #fafaf8;
+  --bg2: #f4f3ef;
+  --bg3: #eceae3;
+  --ink: #1a1a18;
+  --ink2: #3d3d3a;
+  --ink3: #6b6b67;
+  --ink4: #a0a09b;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --a1: #1d4ed8;   /* blue */
+  --a2: #15803d;   /* green */
+  --a3: #7c3aed;   /* purple */
+  --a4: #b45309;   /* amber */
+  --a5: #0f766e;   /* teal */
+  --a6: #c2410c;   /* orange */
+  --a7: #be185d;   /* pink */
+  --a-red: #dc2626;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.85; font-size: 14px; font-weight: 300; }
+
+/* PAGE */
+.page { max-width: 820px; margin: 0 auto; padding: 56px 40px 100px; }
+
+/* COVER */
+.cover { text-align: center; padding: 48px 0 56px; border-bottom: 2px solid var(--ink); margin-bottom: 48px; }
+.cover-category { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--a1); margin-bottom: 20px; }
+.cover-title { font-family: 'Noto Serif KR', serif; font-size: 24px; font-weight: 600; line-height: 1.45; letter-spacing: -0.02em; margin-bottom: 16px; }
+.cover-subtitle { font-size: 13px; color: var(--ink3); line-height: 1.7; max-width: 600px; margin: 0 auto 28px; }
+.cover-meta { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; font-size: 12px; color: var(--ink4); }
+.cover-meta span { display: flex; align-items: center; gap: 5px; }
+
+/* TOC */
+.toc { background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; padding: 24px 28px; margin-bottom: 48px; }
+.toc-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink4); margin-bottom: 14px; }
+.toc-item { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; font-size: 12.5px; color: var(--ink3); }
+.toc-item .toc-num { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--a1); min-width: 28px; }
+.toc-item .toc-dots { flex: 1; border-bottom: 1px dotted var(--border2); margin: 0 6px 3px; }
+.toc-item .toc-pg { font-size: 10.5px; color: var(--ink4); }
+.toc-sub { padding-left: 28px; }
+
+/* SECTIONS */
+.section { margin-bottom: 48px; }
+.section-header { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border2); }
+.section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--a1); font-weight: 500; margin-bottom: 4px; }
+.section-title { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.subsec { margin-bottom: 28px; }
+.subsec-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; padding-left: 12px; border-left: 3px solid var(--a1); color: var(--ink); }
+.subsec-title.t2 { border-left-color: var(--a2); }
+.subsec-title.t3 { border-left-color: var(--a3); }
+.subsec-title.t4 { border-left-color: var(--a4); }
+.subsec-title.t5 { border-left-color: var(--a5); }
+.subsec-title.t6 { border-left-color: var(--a6); }
+.subsec-title.t7 { border-left-color: var(--a7); }
+
+/* PROSE */
+.prose { font-size: 13.5px; color: var(--ink2); line-height: 1.9; margin-bottom: 12px; }
+.prose strong { font-weight: 700; color: var(--ink); }
+.prose em { font-style: italic; color: var(--ink3); }
+
+/* HIGHLIGHT BOXES */
+.box { border-radius: 6px; padding: 14px 18px; margin-bottom: 14px; font-size: 13px; line-height: 1.8; }
+.box-key { background: #eff6ff; border-left: 4px solid var(--a1); color: var(--ink2); }
+.box-warn { background: #fffbeb; border-left: 4px solid var(--a4); color: var(--ink2); }
+.box-new { background: #f0fdf4; border-left: 4px solid var(--a2); color: var(--ink2); }
+.box-formula { background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); line-height: 1.8; }
+.box-formula .eq-label { font-size: 10.5px; color: var(--ink4); font-family: 'Noto Sans KR', sans-serif; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.box-cite { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; font-size: 12px; color: var(--ink3); line-height: 1.65; }
+.box-cite strong { color: var(--ink2); }
+
+/* TABLES */
+.tbl-wrap { overflow-x: auto; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead th { background: var(--ink); color: white; padding: 9px 12px; text-align: left; font-weight: 500; font-size: 11.5px; }
+tbody tr:nth-child(even) { background: var(--bg2); }
+tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--ink2); line-height: 1.65; }
+tbody td strong { color: var(--ink); font-weight: 700; }
+.tbl-caption { font-size: 11.5px; color: var(--ink4); margin-bottom: 8px; font-style: italic; }
+
+/* DATA CARDS */
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.data-card { border: 1px solid var(--border2); border-radius: 6px; padding: 14px 16px; background: white; }
+.data-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.data-tag { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; }
+.dt-a { background: #dbeafe; color: var(--a1); }
+.dt-b { background: #fed7aa; color: var(--a6); }
+.dt-c { background: #d1fae5; color: var(--a2); }
+.dt-d { background: #ede9fe; color: var(--a3); }
+.dt-e { background: #fef3c7; color: var(--a4); }
+.data-name { font-size: 12.5px; font-weight: 700; }
+.data-source { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink4); margin-bottom: 6px; }
+.data-fields { font-size: 12px; color: var(--ink3); line-height: 1.8; }
+.field-item::before { content: '▸ '; color: var(--ink4); }
+.data-note { margin-top: 8px; font-size: 11.5px; color: var(--a4); background: #fffbeb; border-radius: 4px; padding: 6px 10px; }
+
+/* PIPELINE STEPS */
+.step-block { display: grid; grid-template-columns: 52px 1fr; gap: 16px; margin-bottom: 12px; align-items: flex-start; }
+.step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 4px; }
+.step-body { border: 1px solid var(--border2); border-radius: 6px; padding: 16px 20px; background: white; }
+.step-title { font-size: 13.5px; font-weight: 700; margin-bottom: 8px; }
+.step-content { font-size: 12.5px; color: var(--ink2); line-height: 1.8; }
+.step-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-right: 4px; }
+.sb-criteria { background: #dbeafe; color: var(--a1); }
+.sb-new { background: #d1fae5; color: var(--a2); }
+.sb-mod { background: #fef3c7; color: var(--a4); }
+.sb-key { background: #ede9fe; color: var(--a3); }
+
+/* PATTERN TABLE */
+.pattern-visual { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+.pat-card { border: 1px solid var(--border2); border-radius: 6px; padding: 12px; text-align: center; font-size: 12px; }
+.pat-label { font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+.pat-signals { font-size: 16px; margin-bottom: 6px; }
+.pat-interp { font-size: 10.5px; color: var(--ink3); line-height: 1.5; }
+
+/* CRITERIA CARDS */
+.criteria-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+.crit-card { border-radius: 6px; padding: 12px 10px; text-align: center; }
+.crit-name { font-size: 11px; font-weight: 700; margin-bottom: 4px; line-height: 1.4; }
+.crit-badge { font-size: 18px; font-weight: 700; }
+
+/* TAGS */
+.tag { display: inline-flex; font-size: 10.5px; font-weight: 500; padding: 2px 8px; border-radius: 3px; margin: 2px; }
+.tag-blue { background: #dbeafe; color: var(--a1); }
+.tag-green { background: #d1fae5; color: var(--a2); }
+.tag-purple { background: #ede9fe; color: var(--a3); }
+.tag-amber { background: #fef3c7; color: var(--a4); }
+.tag-teal { background: #ccfbf1; color: var(--a5); }
+.tag-red { background: #fee2e2; color: var(--a-red); }
+.tag-gray { background: var(--bg3); color: var(--ink3); }
+
+/* OUTCOME TABLE */
+.outcome-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; font-size: 12.5px; }
+.outcome-icon { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; margin-top: 1px; }
+
+/* TWO COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* MONO */
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+.mini { font-size: 12px; color: var(--ink3); }
+
+.divider { height: 1px; background: var(--border2); margin: 32px 0; }
+.page-break { border-top: 2px solid var(--ink); margin: 48px 0 32px; padding-top: 4px; font-size: 10.5px; color: var(--ink4); font-family: 'JetBrains Mono', monospace; }
+
+/* POLICY CARDS */
+.policy-card { border: 1px solid var(--border2); border-radius: 6px; padding: 18px; background: white; }
+.policy-num { font-size: 26px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.policy-title { font-size: 13px; font-weight: 700; margin: 4px 0 8px; }
+.policy-body { font-size: 12.5px; color: var(--ink3); line-height: 1.75; }
+
+/* FINAL BOX */
+.final-box { background: var(--ink); color: white; border-radius: 8px; padding: 28px 32px; margin-top: 32px; }
+.final-box .fb-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+.final-box .fb-text { font-family: 'Noto Serif KR', serif; font-size: 16px; line-height: 1.75; font-weight: 400; color: rgba(255,255,255,0.92); }
+.final-box .fb-highlight { color: #93c5fd; font-weight: 600; }
+
+.fn { font-size: 10.5px; color: var(--ink4); vertical-align: super; }
+
+@media (max-width: 660px) {
+  .page { padding: 32px 20px 60px; }
+  .data-grid, .two-col, .three-col { grid-template-columns: 1fr; }
+  .criteria-row, .pattern-visual { grid-template-columns: 1fr 1fr; }
+  .step-block { grid-template-columns: 44px 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-category">2026 기후에너지환경부 AX 아이디어 경진대회 · 데이터 분석 자유분석 부문</div>
+  <div class="cover-title">한국 코스피 상장기업 온실가스 공시 신뢰성 3중 검증<br>GIR 법정 배출량·ESG 자체보고·Sentinel-5P 위성 신호<br>불일치 패턴 분류 및 ESG 의무공시 검증체계 설계</div>
+  <div class="cover-subtitle">GIR 법정 온실가스 배출량, ESG 지속가능경영보고서 자체보고 Scope 1, Sentinel-5P TROPOMI 위성 NO₂·SO₂ 신호를 3중으로 비교해 불일치 패턴을 통계적으로 분류하고, 향후 ESG 의무공시 제도 설계에 활용 가능한 우선순위 검증 프레임워크를 제시한다.</div>
+  <div class="cover-meta">
+    <span>● 분석 대상: 코스피 200 ∩ GIR 목표·배출권 대상</span>
+    <span>● 기간: 2019–2023년 (5개년 패널)</span>
+    <span>● 분야: 에너지환경 — 탄소중립·ESG</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-item"><span class="toc-num">01</span>연구 배경 및 필요성<span class="toc-dots"></span><span class="toc-pg">p.1</span></div>
+  <div class="toc-item"><span class="toc-num">02</span>선행 연구 및 연구 격차<span class="toc-dots"></span><span class="toc-pg">p.2</span></div>
+  <div class="toc-item"><span class="toc-num">03</span>연구 설계 — 핵심 연구 질문 및 분석 프레임<span class="toc-dots"></span><span class="toc-pg">p.3</span></div>
+  <div class="toc-item"><span class="toc-num">04</span>데이터 수집 및 구조<span class="toc-dots"></span><span class="toc-pg">p.4</span></div>
+  <div class="toc-item"><span class="toc-num">05</span>전처리 방법론 — 7단계 상세<span class="toc-dots"></span><span class="toc-pg">p.5</span></div>
+  <div class="toc-item"><span class="toc-num">06</span>분석 방법론 — 8단계 완전 설계<span class="toc-dots"></span><span class="toc-pg">p.6</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.1</span>ERA5 기상 보정<span class="toc-dots"></span><span class="toc-pg">p.7</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.2</span>괴리 지표 설계<span class="toc-dots"></span><span class="toc-pg">p.8</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.3</span>이상탐지 3층 구조<span class="toc-dots"></span><span class="toc-pg">p.9</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.4</span>위성 3중 비교 및 패턴 분류<span class="toc-dots"></span><span class="toc-pg">p.10</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.5</span>패널 회귀 분석 + Heckman 선택 모형<span class="toc-dots"></span><span class="toc-pg">p.11</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.6</span>XAI — SHAP·LIME 설명가능성<span class="toc-dots"></span><span class="toc-pg">p.12</span></div>
+  <div class="toc-item toc-sub"><span class="toc-num">6.7</span>정책 우선순위 매트릭스<span class="toc-dots"></span><span class="toc-pg">p.13</span></div>
+  <div class="toc-item"><span class="toc-num">07</span>기대 결과물 및 시각화 계획<span class="toc-dots"></span><span class="toc-pg">p.14</span></div>
+  <div class="toc-item"><span class="toc-num">08</span>방법론적 한계 및 대응 전략<span class="toc-dots"></span><span class="toc-pg">p.15</span></div>
+  <div class="toc-item"><span class="toc-num">09</span>활용 방안 및 정책 제언<span class="toc-dots"></span><span class="toc-pg">p.16</span></div>
+  <div class="toc-item"><span class="toc-num">10</span>심사기준 완전 대응 매핑<span class="toc-dots"></span><span class="toc-pg">p.17</span></div>
+</div>
+
+<!-- ─────────────────────────────── 01 배경 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 01</div>
+    <div class="section-title">연구 배경 및 필요성</div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">1.1 온실가스 공시의 두 채널과 신뢰성 문제</div>
+    <p class="prose">한국 기업은 온실가스 배출량을 두 개의 독립적 채널로 보고한다. 첫째는 <strong>환경부 온실가스종합정보센터(GIR)에 의무 신고</strong>하는 법정 명세서로, 허위 신고 시 온실가스 배출권의 할당 및 거래에 관한 법률에 따라 과태료 및 형사 처벌이 가능하다. 이 데이터는 배출권거래제(K-ETS) 및 목표관리제 운영의 근거 자료로, 현재 가용한 기업 단위 배출량 정보 중 가장 높은 법적 구속력을 갖는다. 둘째는 <strong>투자자 및 시장에 자발적으로 공개하는 ESG 지속가능경영보고서</strong>의 Scope 1 배출량으로, GRI(Global Reporting Initiative), TCFD(Task Force on Climate-related Financial Disclosures), ISSB(International Sustainability Standards Board) 등 국제 기준에 따라 작성되며 제3자 검증을 받는 경우도 있으나 현재까지 허위 공시에 대한 실질적 제재가 부재하다.</p>
+    <p class="prose">이 두 채널은 이론상 <strong>동일한 대상 — 기업 직접 연소 배출량(Scope 1) — 을 측정</strong>해야 한다. 그러나 조직 경계 설정 방식(통제 접근법 vs 지분 접근법), 배출계수 선택(국내 고시계수 vs 국제 기준계수), 공간적 범위(국내 사업장 vs 연결 기준 해외 포함) 등의 기술적 차이와, 처벌 유인 부재에 따른 의도적 과소 신고 가능성이 중첩되어 체계적 괴리가 발생할 수 있다. 이 괴리의 원인을 식별하고 신뢰성을 독립적으로 검증하는 체계가 현재 한국에는 존재하지 않는다.</p>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">1.2 ESG 의무공시 전환과 검증 체계 부재</div>
+    <p class="prose">글로벌 ESG 공시 환경은 2023–2026년 사이 의무화 국면으로 급전환되고 있다. EU의 기업지속가능성보고지침(CSRD)은 2024년부터 단계적 적용 중이며, ISSB의 IFRS S2는 2023년 6월 확정 발표됐다. 한국은 금융위원회가 한국지속가능성기준원(KSSB)을 통해 국내 공시 기준을 마련 중이며, 의무화 시기는 2026년 이후로 추진 중이나 구체적 일정은 아직 확정되지 않은 상태다. SEC는 미국 상장 한국 기업에 기후 관련 공시를 요구하고 있으며, EU CBAM(탄소국경조정제도)은 2026년부터 철강·알루미늄·화학 등 주요 수출 업종에 탄소 비용을 부과한다.</p>
+    <div class="box box-key">
+      <strong>핵심 문제:</strong> ESG 의무공시가 도입되더라도 공시 데이터의 신뢰성을 독립적으로 검증하는 체계가 없으면, 의무화는 형식적 제출 요건에 그친다. 기업이 GIR에는 정확하게 신고하면서 ESG 보고서에는 낮은 수치를 기재하는 구조적 유인이 존재하는 한, 어떤 제도도 실효성을 담보하기 어렵다. 본 연구는 이 검증 체계 부재 문제를 <strong>위성 기반 제3의 독립 측정</strong>으로 해결하는 최초의 방법론을 제안한다.
+    </div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">1.3 위성 관측의 독립 검증 가능성</div>
+    <p class="prose">Sentinel-5P TROPOMI는 2017년 10월 발사 이후 매일 전 지구 3.5 × 5.5km 해상도로 대기 중 NO₂와 SO₂ 컬럼 농도를 측정한다. 화석연료 연소 시 CO₂와 함께 배출되는 NO₂는 연소 활동 강도의 프록시로 검증되어 있으며, SO₂는 특히 석탄 연소와 금속 제련에서 강한 신호를 나타낸다. 이 위성 데이터는 어떤 기업의 보고서와도 무관하게 대기 물리 측정으로 수집되므로, GIR과 ESG 보고 모두에 독립적인 제3의 증거가 된다.</p>
+    <div class="box box-new">
+      <strong>방법론적 혁신:</strong> 기존 연구는 GIR과 ESG 두 보고값을 비교하는 2중 구조에 그쳤다. 본 연구는 <strong>위성 신호를 추가한 3중 비교 구조</strong>를 통해, 두 보고값이 다를 때 어느 쪽이 실제 배출 활동에 더 가까운지를 물리적 관측으로 판별하는 것이 가능하다. 국내에서 이 접근을 한국 코스피 기업 공시 검증에 적용한 연구는 전무하다.
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 02 선행연구 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 02</div>
+    <div class="section-title">선행 연구 및 연구 격차</div>
+  </div>
+
+  <p class="prose">위성 관측 기반 배출량 검증 연구는 2017년 이후 급증했다. 주요 선행 연구를 검토하고 본 연구의 차별점을 명시한다.</p>
+
+  <div class="tbl-wrap">
+    <div class="tbl-caption">표 1. 주요 선행 연구 및 본 연구와의 비교</div>
+    <table>
+      <thead><tr><th>연구</th><th>방법론</th><th>대상</th><th>한계</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Liu et al. (2020, Nature)</strong></td><td>Sentinel-5P NO₂를 CO₂ 배출 프록시로 사용</td><td>중국 발전·산업 시설</td><td>기업 공시 데이터와 비교 없음; 국가/시설 단위</td></tr>
+        <tr><td><strong>Kim et al. (2020, Atmosphere)</strong></td><td>TROPOMI NO₂ vs CAPSS 한국 배출인벤토리</td><td>한국 전국 지역</td><td>기업 단위 분석 아님; ESG 보고서 비교 없음. R=0.96으로 한국 TROPOMI 유효성 확인</td></tr>
+        <tr><td><strong>Fioletov et al. (2025, ACP)</strong></td><td>배경/도시/산업 NO₂ 성분 분리, ERA5 풍향 보정</td><td>전 세계 261개 도시</td><td>기업 단위 공시 비교 없음; 정책 연계 부재</td></tr>
+        <tr><td><strong>Taean 한국 연구 (ScienceDirect, 2024)</strong></td><td>항공 관측 SO₂ mass balance</td><td>태안 발전소·제철소·석화</td><td>단일 시점 실측; GIR·ESG 비교 없음</td></tr>
+        <tr><td><strong>Harmonizing corporate footprints (PMC, 2021)</strong></td><td>GRI 305-1 vs CDP 보고 비교</td><td>유럽·미국 기업</td><td>위성 독립 검증 없음; 한국 대상 아님</td></tr>
+        <tr><td><strong style="color:var(--a1)">본 연구 (2026)</strong></td><td><strong>GIR × ESG × 위성(NO₂+SO₂) 3중 비교 + ERA5 기상보정 + Mann-Kendall + Heckman + SHAP</strong></td><td><strong>한국 코스피 기업 60–80개사, 2019–2023</strong></td><td>국내 최초; 공시 검증 정책 직결</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-key">
+    <strong>연구 격차:</strong> 위성 기반 산업시설 검증 방법론(Liu, Fioletov, Kim)은 확립되어 있으나, 이를 <em>기업 ESG 공시 신뢰성 검증</em>에 적용하고 <em>정책 제도 설계</em>와 연계한 연구는 국내외 모두 극히 제한적이다. 특히 GIR-ESG-위성 3중 비교 구조, ERA5 기상 보정, 3계층 샘플 전략, Heckman 선택 편향 통제를 통합한 분석은 본 연구가 처음이다.
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 03 설계 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 03</div>
+    <div class="section-title">연구 설계 — 핵심 연구 질문 및 분석 프레임</div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">3.1 핵심 연구 질문</div>
+    <div class="three-col" style="margin-bottom:14px">
+      <div style="border:1px solid #bfdbfe;border-radius:6px;padding:14px;background:#eff6ff">
+        <div style="font-size:10px;font-weight:700;color:var(--a1);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">RQ 1 — 공시 신뢰성</div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:6px;line-height:1.45">GIR 법정 배출량과 ESG 자체보고 Scope 1 배출량 간 체계적 괴리가 존재하는가?</div>
+        <div style="font-size:11.5px;color:var(--ink3)">괴리의 크기·방향·연도 추세, 기업 특성(규모·업종·검증여부·GIR Tier)과의 연관성</div>
+      </div>
+      <div style="border:1px solid #bbf7d0;border-radius:6px;padding:14px;background:#f0fdf4">
+        <div style="font-size:10px;font-weight:700;color:var(--a2);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">RQ 2 — 위성 독립 검증</div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:6px;line-height:1.45">기상보정 Sentinel-5P NO₂·SO₂ 신호가 GIR·ESG 보고와 추세적 일관성을 보이는가?</div>
+        <div style="font-size:11.5px;color:var(--ink3)">세 측정값의 Mann-Kendall 방향 일관성 검정, 5종 불일치 패턴 분류</div>
+      </div>
+      <div style="border:1px solid #fde68a;border-radius:6px;padding:14px;background:#fffbeb">
+        <div style="font-size:10px;font-weight:700;color:var(--a4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">RQ 3 — 정책 설계</div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:6px;line-height:1.45">ESG 의무공시 검증 자원을 데이터 기반으로 우선 배분하는 프레임워크는?</div>
+        <div style="font-size:11.5px;color:var(--ink3)">패턴 분류 기반 우선순위 매트릭스, KEITI 직결 제도화 시나리오</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">3.2 분석 프레임 — 3중 비교 구조</div>
+    <div class="box box-formula">
+      <div class="eq-label">핵심 비교 구조</div>
+      GIR 법정 배출량 (Scope 1, tCO₂eq)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↕ 비교 ① "공시 괴리 측정"<br>
+      ESG 자체보고 배출량 (Scope 1, tCO₂eq)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↕ 비교 ② "위성 독립 검증"<br>
+      기상보정 위성 NO₂·SO₂ 신호 (연소 활동 강도 프록시)<br><br>
+      비교 ③: GIR과 위성의 방향 일관성 → 어느 공시가 실제 배출에 가까운지 판별
+    </div>
+    <p class="prose">이 구조의 핵심 혁신은 <strong>절대값 비교가 아닌 연도별 증감 방향 일관성(Mann-Kendall τ)</strong>을 분석한다는 점이다. NO₂가 CO₂와 단위가 다르다는 한계, 기업별 배출 특성 차이라는 한계를 모두 방향 분석으로 우회한다. 기상 보정(ERA5)으로 날씨 효과를 제거한 뒤 "배출 활동이 증가했는가 감소했는가"를 세 소스에서 독립적으로 판단하는 것이 가능해진다.</p>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 04 데이터 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 04</div>
+    <div class="section-title">데이터 수집 및 구조</div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">4.1 분석 대상 및 기간</div>
+    <p class="prose"><strong>분석 기간:</strong> 2019–2023년 5개년 패널 (코로나 전·중·후 포함). <strong>분석 대상:</strong> 코스피 200 기업 ∩ GIR 목표관리제·배출권거래제 대상 기업 교집합. 초기 후보군에서 ESG 보고서 발간 기업만 골드(Gold)·실버(Silver) 샘플로 분류. 최종 메인 분석 대상: Gold 샘플 기준 30–50개사 예상(ESG 보고서 내 국내/해외 Scope 1 분리 기재 기업), 전체 포함 시 60–80개사.</p>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">4.2 데이터셋 6종 완전 명세</div>
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="data-card-head"><span class="data-tag dt-a">A · 기준값</span><span class="data-name">GIR 관리업체 명세서 배출량</span></div>
+        <div class="data-source">data.go.kr → 온실가스종합정보센터 관리업체 명세서</div>
+        <div class="data-fields">
+          <div class="field-item">사업자등록번호 (매칭 주키)</div>
+          <div class="field-item">Scope 1 직접 배출량 (tCO₂eq)</div>
+          <div class="field-item">산정방법론 Tier (T1/T2/T3) — 통제변수</div>
+          <div class="field-item">업종코드 / 지정구분 / 이행연도</div>
+          <div class="field-item">에너지소비량 TJ — 규모 통제용</div>
+        </div>
+        <div class="data-note">⚠ 사업장 단위 → 사업자번호 groupby 합산. Tier가 다른 기업 비교 시 Tier를 반드시 통제변수로 포함.</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-head"><span class="data-tag dt-a">A-2 · 공간키</span><span class="data-name">GIR 할당대상업체 지정 현황</span></div>
+        <div class="data-source">data.go.kr → 온실가스종합정보센터 할당대상업체</div>
+        <div class="data-fields">
+          <div class="field-item">사업장 주소지 (위성 버퍼용)</div>
+          <div class="field-item">사업자번호 (A와 조인)</div>
+          <div class="field-item">업종 / 계획기간</div>
+        </div>
+        <div class="data-note">주소 → Kakao Local API geocoding. 도로명/지번 혼재 정제 필수.</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-head"><span class="data-tag dt-b">B · 자체보고</span><span class="data-name">KRX ESG 포털 + 지속가능경영보고서 PDF</span></div>
+        <div class="data-source">esg.krx.co.kr + DART 공시 PDF</div>
+        <div class="data-fields">
+          <div class="field-item">GRI 305-1 Scope 1 자체신고 (tCO₂eq)</div>
+          <div class="field-item">국내/해외 분리 기재 여부 → 샘플 계층 결정</div>
+          <div class="field-item">조직 경계 접근법 (통제/지분) → 통제변수</div>
+          <div class="field-item">제3자 검증기관 여부 → 핵심 통제변수</div>
+          <div class="field-item">보고 기준 (GRI/TCFD/ISSB)</div>
+        </div>
+        <div class="data-note">⚠ pdfplumber + GRI 인덱스 305-1 우선 파싱. 신뢰도 점수 부여. 단위(tCO₂ vs 천tCO₂) 통일.</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-head"><span class="data-tag dt-c">C · 독립관측 1</span><span class="data-name">Sentinel-5P TROPOMI NO₂ (GEE)</span></div>
+        <div class="data-source">COPERNICUS/S5P/OFFL/L3_NO2</div>
+        <div class="data-fields">
+          <div class="field-item">사업장 반경 10km 버퍼 (독립입지 기준)</div>
+          <div class="field-item">월별 NO₂ 컬럼 농도 평균 (mol/m²)</div>
+          <div class="field-item">qa_value ≥ 0.75 필터</div>
+          <div class="field-item">ERA5 기상보정 후 잔차(Δ_met) 사용</div>
+        </div>
+        <div class="data-note">Kim et al. (2020): 한국 TROPOMI NO₂ vs CAPSS R=0.96. 방법론 유효성 확인됨.</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-head"><span class="data-tag dt-c">C-2 · 독립관측 2</span><span class="data-name">Sentinel-5P TROPOMI SO₂ (GEE)</span></div>
+        <div class="data-source">COPERNICUS/S5P/OFFL/L3_SO2</div>
+        <div class="data-fields">
+          <div class="field-item">철강·발전·석유화학 업종 특화</div>
+          <div class="field-item">월별 SO₂ 컬럼 농도 (DU)</div>
+          <div class="field-item">NO₂와 동일 버퍼·기간·필터·기상보정</div>
+          <div class="field-item">NO₂와 교차 검증으로 결과 견고성 확보</div>
+        </div>
+        <div class="data-note">Taean 연구(2024): 한국 발전소·제철소 SO₂ top-down 실증. SO₂ 신뢰도 확인됨.</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-head"><span class="data-tag dt-d">D · 통제변수</span><span class="data-name">DART Open API + ERA5 기상</span></div>
+        <div class="data-source">dart.fss.or.kr API + GEE ECMWF/ERA5_LAND</div>
+        <div class="data-fields">
+          <div class="field-item">매출액 / 자산총액 / 업종코드(KSIC)</div>
+          <div class="field-item">ERA5: u10·v10·tp·t2m·blh (월별)</div>
+          <div class="field-item">종업원수 / 설립연도 / 상장여부</div>
+        </div>
+        <div class="data-note">ERA5는 GEE 무료 접근 가능. ECMWF/ERA5_LAND/HOURLY 컬렉션.</div>
+      </div>
+    </div>
+
+    <p class="prose"><strong>최종 분석 패널 구조:</strong></p>
+    <div class="box box-formula">
+      <span class="mono">Panel = 기업ID × 연도 × {GIR_S1, ESG_S1, 괴리율, NO₂_Δmet, SO₂_Δmet, lnAsset, Tier, 검증여부, 조직경계, 업종더미, IMR}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 05 전처리 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 05</div>
+    <div class="section-title">전처리 방법론 — 7단계 상세</div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#dbeafe;color:var(--a1)">P1</div>
+    <div class="step-body">
+      <div class="step-title">기업 식별자 통합 매칭</div>
+      <div class="step-content">
+        GIR(사업자번호), ESG PDF(기업명), DART(corp_code)를 단일 키로 연결한다.<br>
+        <strong>1차:</strong> DART corp_code → 사업자번호 변환 후 GIR 사업자번호와 직접 매칭 (오차 0).<br>
+        <strong>2차:</strong> 직접 매칭 실패 시 RapidFuzz fuzzy matching (token_sort_ratio ≥ 85). 임계값 85 이하 케이스는 수동 검수 대기열로 분류.<br>
+        <strong>3차:</strong> 수동 검수 — 두 연구자 독립 판단 후 합의. 불일치 시 제외.<br>
+        <em>최종 목표: Gold 샘플 30–50개사, 전체 60–80개사.</em>
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#d1fae5;color:var(--a2)">P2</div>
+    <div class="step-body">
+      <div class="step-title">GIR 산정방법론 Tier 분류 및 플래그 <span class="step-badge sb-new">신규</span></div>
+      <div class="step-content">
+        GIR 명세서에 포함된 산정방법론 Tier 코드를 추출해 통제변수화한다.<br>
+        <strong>Tier 1 (T1):</strong> 국가 고시 기본 배출계수 사용. 정확도 낮음.<br>
+        <strong>Tier 2 (T2):</strong> 국가 특정 배출계수 사용. 중간 정확도.<br>
+        <strong>Tier 3 (T3):</strong> 시설 특정 실측 배출계수 사용. 가장 높은 정확도.<br>
+        Tier가 다른 기업끼리 GIR 수치를 직접 비교하면 방법론 차이가 괴리로 오탐될 수 있으므로, 패널 회귀의 통제변수로 반드시 포함하고, 동일 Tier 내 비교를 우선 보고한다.
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span><span class="step-badge sb-new">신규 추가</span></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#fef3c7;color:var(--a4)">P3</div>
+    <div class="step-body">
+      <div class="step-title">3계층 샘플 전략 — 조직 경계 불확실성 구조화 <span class="step-badge sb-new">신규</span></div>
+      <div class="step-content">
+        GIR은 국내 사업장 단위, ESG는 연결 기준(해외 포함 가능)으로 조직 경계가 다를 수 있다. 이를 명시적으로 구조화한다.<br><br>
+        <strong>Gold 샘플 (메인 분석):</strong> 국내 사업장 매출 비중 ≥ 90% AND ESG 보고서 내 국내/해외 Scope 1 분리 기재 AND GIR 코드 DART 연계 확인. 조직 경계 불일치 위험 최소. 통계 추론의 핵심 근거.<br>
+        <strong>Silver 샘플 (보완 분석):</strong> 국내 매출 비중 70–90% OR 국내/해외 분리 미기재. 해외 매출 비중 × 업종 평균 배출집약도로 추정 보정계수 적용 후 포함. 결과 비교용.<br>
+        <strong>Bronze 샘플 (기술 통계):</strong> 나머지. 괴리율 서술 통계 보고만, 통계 추론에서 제외.<br>
+        <em>Gold 샘플 결과 vs Silver+Bronze 포함 결과를 나란히 보고해 robustness 확인.</em>
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span><span class="step-badge sb-new">신규 추가</span></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#ede9fe;color:var(--a3)">P4</div>
+    <div class="step-body">
+      <div class="step-title">Scope 정의 통일 및 PDF 파싱 신뢰도 점수</div>
+      <div class="step-content">
+        <strong>Scope 통일:</strong> GRI 305-1 항목의 Scope 1 직접 배출량만 추출. GRI 인덱스 페이지에서 305-1 항목 페이지를 먼저 파싱 후 해당 페이지만 집중 처리. 단위 통일(tCO₂eq).<br>
+        <strong>파싱 신뢰도 점수:</strong> 각 수치에 3단계 신뢰도 플래그 부여 — ① 자동파싱 + 숫자 서식 일치(HIGH) ② 자동파싱 + 수동 확인(MEDIUM) ③ 수동 입력(LOW). LOW 플래그 수치 제외 후 sensitivity analysis 진행. 불확실 케이스 비율 보고.
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#ccfbf1;color:var(--a5)">P5</div>
+    <div class="step-body">
+      <div class="step-title">결측치 처리 — MICE 다중대체</div>
+      <div class="step-content">
+        ESG 보고서 미발간 연도의 Scope 1 수치 결측에 MICE(Multiple Imputation by Chained Equations) 적용. 업종·규모·연도를 보조 변수로 사용해 5개 대체 데이터셋 생성. Rubin's rules로 결과 통합. 대체 방법(listwise deletion 대비) sensitivity analysis로 결과 안정성 확인.
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#fce7f3;color:var(--a7)">P6</div>
+    <div class="step-body">
+      <div class="step-title">이상값 처리 및 컨텍스트 플래그</div>
+      <div class="step-content">
+        IQR 방식(Q1–1.5×IQR, Q3+1.5×IQR) 초과값은 자동 플래그 후 <strong>반드시 맥락 검토</strong>. 단순 수치 이상이 아닌 기업별 사유 문서화 필수.<br>
+        — 기업 합병·분할 연도: 조직 경계 급변으로 인한 이상값 → 별도 표기<br>
+        — 코로나 2020년: 생산 급감으로 전 기업 배출 하락 → 2020 연도 더미 or 민감도 분석에서 제외<br>
+        — 사업 전환(사업장 신설·폐쇄): 적정 보정 후 유지 또는 제외 기재
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-circle" style="background:#fef9c3;color:#92400e">P7</div>
+    <div class="step-body">
+      <div class="step-title">데이터 버전 관리 및 재현성 <span class="step-badge sb-new">신규</span></div>
+      <div class="step-content">
+        공공데이터포털 GIR 파일 수집 날짜 + SHA-256 해시값을 메타데이터로 저장. GEE 코드 버전 번호 및 접근 날짜 기록. PDF 파싱 로그 전체 보관. 이 3가지로 "해당 결과는 이 날짜의 이 버전 데이터에서 도출됐다"는 추적성 확보.
+      </div>
+      <div style="margin-top:8px"><span class="step-badge sb-criteria">데이터 전처리</span><span class="step-badge sb-new">재현성 확보</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 06 분석 방법론 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 06</div>
+    <div class="section-title">분석 방법론 — 8단계 완전 설계</div>
+  </div>
+
+  <!-- 6.1 ERA5 -->
+  <div class="subsec">
+    <div class="subsec-title t2">6.1 ERA5 기상 보정 — 위성 신호 기상 효과 제거</div>
+    <p class="prose">TROPOMI NO₂ 컬럼 농도는 실제 배출 변화 외에도 강수, 풍속, 기온, 대기경계층 높이(BLH)에 의해 크게 변동한다. 선행 연구에 따르면 기상 변동성만으로 연도 간 NO₂ 차이가 최대 15%에 달하며, 강수량과의 상관계수는 R=0.6–0.8 수준이다. 기상 보정 없이 연도별 추세를 비교하면 배출 변화가 아닌 기후 패턴을 분석하게 된다.</p>
+    <div class="box box-formula">
+      <div class="eq-label">기상 보정 회귀 모형 (사업장 i, 월 t)</div>
+      NO₂ᵢₜ = β₀ + β₁·u10ᵢₜ + β₂·v10ᵢₜ + β₃·tpᵢₜ + β₄·t2mᵢₜ + β₅·blhᵢₜ<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ Σₘ γₘ·월더미ₘ + εᵢₜ<br><br>
+      기상보정 NO₂ (Δ_met)ᵢₜ = εᵢₜ&nbsp;&nbsp;(잔차 = 기상 효과 제거 후 신호)
+    </div>
+    <div class="two-col">
+      <div>
+        <p class="prose"><strong>GEE 데이터 접근:</strong></p>
+        <div class="box box-formula" style="font-size:12px">
+          ERA5: ee.ImageCollection('ECMWF/ERA5_LAND/HOURLY')<br>
+          변수: u_component_of_wind_10m (u10)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v_component_of_wind_10m (v10)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total_precipitation_hourly (tp)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2m_temperature (t2m)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boundary_layer_height (blh)<br>
+          추출: 사업장 10km 버퍼 내 월별 평균
+        </div>
+      </div>
+      <div>
+        <p class="prose"><strong>처리 순서:</strong></p>
+        <div style="font-size:12px;color:var(--ink3);line-height:2">
+          ① 월별 NO₂ 컴포짓 (qa_value ≥ 0.75)<br>
+          ② 월별 ERA5 5개 기상변수 추출<br>
+          ③ 기업별 월 단위 패널 생성<br>
+          ④ OLS 회귀로 β 추정<br>
+          ⑤ 잔차 Δ_met 추출 → 연간 평균<br>
+          ⑥ SO₂도 동일 절차 적용<br>
+          ⑦ Raw vs 보정 결과 sensitivity 비교
+        </div>
+      </div>
+    </div>
+    <div class="box box-warn"><strong>방법론적 근거:</strong> Fioletov et al. (2025, ACP) — ERA5 풍향·풍속으로 NO₂ 플룸 분리; Kim et al. (2020, Atmosphere) — 한국 TROPOMI NO₂ vs CAPSS R=0.96. 이 두 연구가 본 연구의 위성 방법론 유효성의 직접 근거.</div>
+  </div>
+
+  <!-- 6.2 괴리 지표 -->
+  <div class="subsec">
+    <div class="subsec-title t3">6.2 괴리 지표 설계 — 다차원 측정</div>
+    <div class="box box-formula">
+      <div class="eq-label">기업 i, 연도 t의 공시 괴리 지표</div>
+      절대 괴리ᵢₜ = ESG_S1ᵢₜ − GIR_S1ᵢₜ&nbsp;&nbsp;&nbsp;[단위: tCO₂eq]<br><br>
+      상대 괴리율ᵢₜ (%) = (ESG_S1ᵢₜ − GIR_S1ᵢₜ) / GIR_S1ᵢₜ × 100<br><br>
+      방향성ᵢₜ = sign(상대 괴리율ᵢₜ)&nbsp;&nbsp;→ +1 (과대), −1 (과소), 0 (일치)
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-caption">표 2. 괴리 지표 분석 차원</div>
+      <table>
+        <thead><tr><th>분석 차원</th><th>세부 내용</th><th>기대 발견</th></tr></thead>
+        <tbody>
+          <tr><td><strong>규모 분포</strong></td><td>절대 괴리의 히스토그램, 백분위수(P10/P50/P90)</td><td>상위 10% 기업이 전체 괴리의 X% 설명</td></tr>
+          <tr><td><strong>방향성 비율</strong></td><td>과소 신고(−) vs 과대 신고(+) 기업 수</td><td>과소 신고 기업 다수 → ESG 보수적 보고 편향 확인</td></tr>
+          <tr><td><strong>연도별 추세</strong></td><td>2019→2023 연간 평균 괴리율 추이</td><td>ESG 의무화 논의 전후 괴리 변화 여부</td></tr>
+          <tr><td><strong>업종별 비교</strong></td><td>에너지/철강/화학/기타 4개 군 ANOVA</td><td>배출 집약 업종에서 괴리 더 큰지</td></tr>
+          <tr><td><strong>검증 여부 효과</strong></td><td>제3자 검증 기업 vs 미검증 기업 t-test</td><td>검증 기업 괴리 유의하게 낮은지</td></tr>
+          <tr><td><strong>Tier 효과</strong></td><td>GIR Tier T1/T2/T3 간 괴리율 비교</td><td>T3(시설측정) 기업 괴리 낮은지</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 6.3 이상탐지 -->
+  <div class="subsec">
+    <div class="subsec-title t4">6.3 이상탐지 3층 구조 — 구조적 불일치 기업 식별</div>
+    <p class="prose">단일 알고리즘으로는 다차원 공시 불일치의 다양한 양상을 포착하기 어렵다. 단면 이상(특정 연도 비정상) vs 시계열 이상(5개년 추세 비정상)을 분리해 탐지한다.</p>
+
+    <p class="prose"><strong>Layer 1 — 단면 이상탐지 (Cross-Sectional Anomaly Detection)</strong></p>
+    <div class="box box-formula">
+      입력 벡터 Xᵢₜ = [괴리율ᵢₜ, ln(GIR_S1ᵢₜ), 연도t, 업종더미, 검증여부]<br><br>
+      Isolation Forest: score_IFᵢₜ = anomaly_score(Xᵢₜ; contamination ∈ {0.05, 0.10, 0.15, 0.20})<br>
+      LOF: score_LOFᵢₜ = local_outlier_factor(Xᵢₜ; k=20)<br><br>
+      앙상블: 이상₁ᵢₜ = 1 iff (score_IF < threshold_IF) AND (score_LOF > threshold_LOF)
+    </div>
+    <p class="mini">Contamination sensitivity: 네 값 모두 실험 후 결과 안정성 보고. 두 모델 동시 이상 판정 = false positive 최소화.</p>
+
+    <p class="prose" style="margin-top:14px"><strong>Layer 2 — 시계열 이상탐지 (Longitudinal Trend Detection)</strong></p>
+    <div class="box box-formula">
+      기업 i의 괴리율 시계열: Δᵢ = {괴리율ᵢ,2019, 괴리율ᵢ,2020, ..., 괴리율ᵢ,2023}<br><br>
+      Mann-Kendall 추세 검정:<br>
+      &nbsp;&nbsp;H₀: 괴리율 시계열에 단조 추세 없음<br>
+      &nbsp;&nbsp;H₁: 단조 증가(τ > 0) 또는 단조 감소(τ < 0) 추세 존재<br><br>
+      검정통계량 S = Σᵢ﹤ⱼ sgn(Δⱼ − Δᵢ)<br>
+      켄달 τ = S / (n(n-1)/2)&nbsp;&nbsp;&nbsp;→ p값 및 유의성 판정<br><br>
+      이상₂ᵢ = 1 iff (|τ| ≥ 0.6 AND p &lt; 0.1)
+    </div>
+
+    <p class="prose" style="margin-top:14px"><strong>최종 분류 (Layer 1 × Layer 2 교차 판정)</strong></p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>최종 분류</th><th>Layer 1</th><th>Layer 2</th><th>해석</th><th>정책 우선순위</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:var(--a-red)">구조적 불일치</strong></td><td>이상</td><td>이상</td><td>단면+시계열 모두 비정상. 가장 심각한 패턴.</td><td>★★★ 즉시 검증</td></tr>
+          <tr><td><strong style="color:var(--a6)">추세적 불일치</strong></td><td>정상</td><td>이상</td><td>특정 연도는 평범하나 5개년 전체 추세가 비정상.</td><td>★★ 우선 관찰</td></tr>
+          <tr><td><strong style="color:var(--a4)">일시적 불일치</strong></td><td>이상</td><td>정상</td><td>특정 연도만 비정상. 사건(합병 등) 원인 검토.</td><td>★ 모니터링</td></tr>
+          <tr><td><strong style="color:var(--a2)">정상</strong></td><td>정상</td><td>정상</td><td>두 레이어 모두 정상 범위.</td><td>— 일반 관리</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 6.4 위성 3중 비교 -->
+  <div class="subsec">
+    <div class="subsec-title t5">6.4 위성 3중 비교 및 패턴 분류 — 연구의 핵심 독창성</div>
+    <p class="prose">GIR 시계열, ESG 시계열, 기상보정 위성 신호(NO₂, SO₂) 각각에 Mann-Kendall 추세 검정을 적용한다. 네 시계열의 τ 부호(+/−) 조합과 통계 유의성(p&lt;0.1)으로 5종 패턴을 분류한다.</p>
+
+    <div class="box box-formula">
+      각 시계열 s ∈ {GIR, ESG, NO₂_Δmet, SO₂_Δmet}에 대해:<br>
+      (τˢᵢ, pˢᵢ) = MannKendall(시계열ˢᵢ,2019..2023)<br><br>
+      방향 판정: dir(s,i) = sign(τˢᵢ) if pˢᵢ &lt; 0.1, else "무추세(0)"<br><br>
+      패턴 분류: pattern(i) = f(dir(GIR,i), dir(ESG,i), dir(NO₂,i), dir(SO₂,i))
+    </div>
+
+    <div class="pattern-visual">
+      <div class="pat-card" style="border-color:#bbf7d0;background:#f0fdf4">
+        <div class="pat-label" style="color:var(--a2)">패턴 A — 일관</div>
+        <div class="pat-signals">⬆ ⬆ ⬆</div>
+        <div class="pat-interp">GIR·ESG·위성 모두 같은 방향. 공시 신뢰성 높음.</div>
+      </div>
+      <div class="pat-card" style="border-color:#fecaca;background:#fff5f5">
+        <div class="pat-label" style="color:var(--a-red)">패턴 B — ESG 이탈</div>
+        <div class="pat-signals">⬆ ⬇ ⬆</div>
+        <div class="pat-interp">GIR↑·위성↑, ESG만 반대. ESG 과소보고 의심. 위성이 GIR 지지.</div>
+      </div>
+      <div class="pat-card" style="border-color:#fde68a;background:#fffbeb">
+        <div class="pat-label" style="color:var(--a4)">패턴 C — GIR 의심</div>
+        <div class="pat-signals">⬇ ⬆ ⬆</div>
+        <div class="pat-interp">ESG↑·위성↑, GIR만 반대. GIR 과소 산정 의심. 위성이 ESG 지지.</div>
+      </div>
+      <div class="pat-card" style="border-color:#fda4af;background:#fff1f2">
+        <div class="pat-label" style="color:#be123c">패턴 D — 최심각 ★</div>
+        <div class="pat-signals">⬇ ⬇ ⬆</div>
+        <div class="pat-interp">위성↑, GIR·ESG 모두 반대. 양쪽 보고 모두 실제와 불일치. 가장 심각.</div>
+      </div>
+      <div class="pat-card" style="border-color:#e5e7eb;background:#f9fafb">
+        <div class="pat-label" style="color:var(--ink4)">패턴 E — 무추세</div>
+        <div class="pat-signals">— — —</div>
+        <div class="pat-interp">유의한 추세 없음. 방향 판단 불가. 5년이 너무 짧거나 실제 안정적.</div>
+      </div>
+    </div>
+
+    <div class="box box-warn">
+      <strong>독립입지 사업장 우선 분석:</strong> 주변 5km 이내에 GIR 대형 사업장이 없는 기업을 1차 분석 대상으로 선별해 NO₂ 플룸 혼재 문제 최소화. 밀집 공단(울산·여수·포항 등) 소재 기업은 "기업 군집 단위" 분석으로 별도 처리하고 개별 기업 귀속 불가 한계 명시.
+    </div>
+  </div>
+
+  <!-- 6.5 패널 회귀 -->
+  <div class="subsec">
+    <div class="subsec-title t6">6.5 패널 회귀 분석 + Heckman 선택 모형</div>
+    <p class="prose">패널 회귀를 통해 어떤 기업 특성이 공시 괴리율과 유의하게 연관되는지 검정한다. ESG 보고서를 자발적으로 발간하는 기업이 특정 특성을 공유하는 선택 편향을 Heckman 2단계 모형으로 통제한다.</p>
+
+    <div class="box box-formula">
+      <div class="eq-label">1단계 — Heckman Probit (선택 방정식)</div>
+      P(ESG_report = 1)ᵢₜ = Φ(α₀ + α₁·ln(Assetᵢₜ) + α₂·KOSPI200ᵢ + α₃·업종ᵢ + α₄·연도ₜ + ηᵢₜ)<br><br>
+      → 역밀스 비율(Inverse Mills Ratio, IMR)ᵢₜ = φ(·) / Φ(·) 계산
+    </div>
+    <div class="box box-formula" style="margin-top:12px">
+      <div class="eq-label">2단계 — 고정효과 패널 회귀 (괴리 방정식)</div>
+      괴리율ᵢₜ = β₀ + β₁·ln(Assetᵢₜ) + β₂·검증여부ᵢₜ + β₃·조직경계ᵢ + β₄·Tierᵢₜ<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ β₅·IMRᵢₜ + β₆·업종더미ᵢ + β₇·연도더미₂₀₂₀..₂₀₂₃ + μᵢ + εᵢₜ<br><br>
+      μᵢ = 기업 고정효과 (관측 불가 기업별 불변 특성 통제)
+    </div>
+    <div class="tbl-wrap" style="margin-top:12px">
+      <div class="tbl-caption">표 3. 주요 변수 정의 및 기대 방향</div>
+      <table>
+        <thead><tr><th>변수</th><th>측정</th><th>기대 방향</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ln(Asset)</strong></td><td>자산 자연로그</td><td>?</td><td>대기업일수록 공시 정교화 vs 절대 괴리 규모 커질 수 있음</td></tr>
+          <tr><td><strong>검증여부</strong></td><td>제3자 검증=1, 없음=0</td><td>음(−)</td><td>검증 시 과소보고 억제 효과 기대</td></tr>
+          <tr><td><strong>조직경계</strong></td><td>통제접근법=1, 지분접근법=0</td><td>+</td><td>통제접근법이 더 넓은 범위 포함 → 과대보고 가능성</td></tr>
+          <tr><td><strong>Tier</strong></td><td>T3=2, T2=1, T1=0</td><td>음(−)</td><td>시설측정(T3)일수록 GIR 정확도 ↑ → 괴리 감소</td></tr>
+          <tr><td><strong>IMR</strong></td><td>1단계 역밀스 비율</td><td>?</td><td>선택 편향 통제 변수; 유의성 자체가 선택 편향 존재 증거</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="prose" style="margin-top:10px"><strong>강건성 검정 3종:</strong></p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="box" style="background:var(--bg2);border:1px solid var(--border2);padding:12px">
+        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">① 클러스터 표준오차</div>
+        <div class="mini">업종별 클러스터 표준오차로 동일 업종 내 오차 상관 통제</div>
+      </div>
+      <div class="box" style="background:var(--bg2);border:1px solid var(--border2);padding:12px">
+        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">② 코로나 제외</div>
+        <div class="mini">2020년 제외 후 재실행. 코로나 특수 효과가 결과를 왜곡하는지 확인</div>
+      </div>
+      <div class="box" style="background:var(--bg2);border:1px solid var(--border2);padding:12px">
+        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">③ 괴리 정의 변경</div>
+        <div class="mini">상대 괴리율 → 절대 괴리(tCO₂eq)로 변경 후 재실행. 측정 방법에 결과 민감성 확인</div>
+      </div>
+    </div>
+    <p class="mini" style="margin-top:8px">Bootstrap 95% CI 보고 필수 (소샘플 패널 불확실성 정량화). Hausman 검정으로 고정효과 vs 확률효과 결정.</p>
+  </div>
+
+  <!-- 6.6 XAI -->
+  <div class="subsec">
+    <div class="subsec-title t7">6.6 XAI — SHAP·LIME 설명가능성 분석</div>
+    <p class="prose">회귀 계수의 평균 효과를 넘어, 어떤 변수가 <em>어떤 기업의</em> 공시 불일치를 설명하는지 개별 수준에서 분해한다.</p>
+    <div class="two-col">
+      <div>
+        <p class="prose"><strong>SHAP TreeExplainer:</strong></p>
+        <div class="box box-formula" style="font-size:12px">
+          TreeExplainer(model, feature_perturbation='interventional')<br>
+          → SHAP valueᵢⱼ for feature j, observation i<br><br>
+          해석:<br>
+          - 양수: 변수 j가 괴리율 증가에 기여<br>
+          - 음수: 괴리율 감소에 기여<br>
+          - |SHAP|: 기여 크기<br><br>
+          출력: ① 기업별 waterfall plot<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;② 전체 summary beeswarm plot<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;③ 업종별 평균 SHAP
+        </div>
+      </div>
+      <div>
+        <p class="prose"><strong>LIME (Local Interpretable Model-agnostic Explanations):</strong></p>
+        <div style="font-size:12.5px;color:var(--ink2);line-height:1.8">
+          이상탐지에서 "구조적 불일치"로 분류된 개별 기업에 적용. 해당 기업 근방에서 선형 근사 모델로 "왜 이 기업이 이상으로 탐지됐는가"를 인간이 해석 가능한 언어로 설명.<br><br>
+          예: "A사는 ① 2022년 괴리율이 업종 평균의 3배, ② 제3자 검증 없음, ③ GIR T1 산정 — 이 세 요인의 조합으로 이상 탐지"
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.7 정책 매트릭스 -->
+  <div class="subsec">
+    <div class="subsec-title">6.7 정책 우선순위 매트릭스</div>
+    <p class="prose">분석 결과를 KEITI가 즉시 활용 가능한 형태로 변환한다. 4개 축을 조합해 기업별 "검증 우선순위 점수"를 산출한다.</p>
+    <div class="box box-formula">
+      우선순위 점수ᵢ = w₁ · 괴리심각도ᵢ + w₂ · 위성불일치ᵢ + w₃ · GIR_Tierᵢ_역수 + w₄ · 검증여부_역수ᵢ<br><br>
+      괴리심각도: |괴리율| 백분위 (0–100)<br>
+      위성불일치: 패턴D=3, 패턴B=2, 패턴C=2, 패턴E=1, 패턴A=0<br>
+      Tier 역수: T1=3, T2=2, T3=1 (낮은 Tier = 검증 필요 ↑)<br>
+      검증여부 역수: 제3자 검증 없음=2, 있음=1<br><br>
+      최종 분류: 상위 25% → "즉시 검증 대상", 26–50% → "우선 관찰", 나머지 → "일반 모니터링"
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 07 기대 결과물 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 07</div>
+    <div class="section-title">기대 결과물 및 시각화 계획</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-caption">표 4. 분석 단계별 기대 결과물</div>
+    <table>
+      <thead><tr><th>단계</th><th>결과물</th><th>형태</th><th>심사기준 기여</th></tr></thead>
+      <tbody>
+        <tr><td>전처리</td><td>3계층 샘플 분류 현황 (Gold/Silver/Bronze 기업 수)</td><td>표</td><td>데이터 전처리</td></tr>
+        <tr><td>괴리 산출</td><td>업종별·연도별 평균 괴리율 히트맵 (연도×업종 행렬)</td><td>시각화</td><td>인사이트 독창성</td></tr>
+        <tr><td>이상탐지</td><td>이상탐지 분류 결과 (구조적/추세적/일시적/정상 기업 수)</td><td>표 + scatter</td><td>분석기법 타당성</td></tr>
+        <tr><td>위성 비교</td><td>패턴 분류 결과 (A–E 각 기업 수 및 업종 분포)</td><td>Sankey diagram</td><td>인사이트 독창성</td></tr>
+        <tr><td>위성 비교</td><td>패턴 B/D 기업 사례 — 세 시계열 시각화</td><td>Time series plot</td><td>결과의 유의성</td></tr>
+        <tr><td>패널 회귀</td><td>회귀계수 표 (β, SE, p값, Bootstrap 95% CI)</td><td>표</td><td>결과의 유의성</td></tr>
+        <tr><td>패널 회귀</td><td>강건성 검정 3종 결과 비교 표</td><td>표</td><td>결과의 유의성</td></tr>
+        <tr><td>XAI</td><td>SHAP summary beeswarm plot (전체 기업 변수 중요도)</td><td>시각화</td><td>결과의 유의성</td></tr>
+        <tr><td>XAI</td><td>상위 5개 고위험 기업 LIME 개별 설명</td><td>bar chart</td><td>인사이트 독창성</td></tr>
+        <tr><td>정책</td><td>검증 우선순위 매트릭스 (기업별 점수 + 분류)</td><td>scatter matrix</td><td>활용 방안</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 08 한계 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 08</div>
+    <div class="section-title">방법론적 한계 및 대응 전략</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-caption">표 5. 방법론적 한계 및 대응 — 전문가 원탁회의 합의 결과</div>
+    <table>
+      <thead><tr><th>한계</th><th>지적 전문가</th><th>대응 전략</th><th>효과</th></tr></thead>
+      <tbody>
+        <tr><td><strong>기상 효과 혼재</strong><br><em>날씨 변동이 NO₂에 R=0.6–0.8 영향</em></td><td>기후학자, 모델링학자</td><td>ERA5 기상보정 잔차(Δ_met) 사용. Raw NO₂는 sensitivity용으로만.</td><td>위성 분석 타당성 확보</td></tr>
+        <tr><td><strong>플룸 혼재 (밀집 공단)</strong><br><em>울산·여수 등 여러 기업 신호 중첩</em></td><td>기후모델링학자</td><td>독립입지 기업 우선 분석. 밀집 공단은 군집 단위로 분석 단위 조정 후 명시.</td><td>개별 귀속 오류 최소화</td></tr>
+        <tr><td><strong>조직 경계 불일치</strong><br><em>GIR은 국내, ESG는 해외 포함 가능</em></td><td>환경학자</td><td>3계층 샘플 전략. Gold 샘플(국내 90%↑)이 메인 분석. 조직경계를 통제변수로 포함.</td><td>편향 구조화·통제</td></tr>
+        <tr><td><strong>샘플 선택 편향</strong><br><em>ESG 보고서 자발 발간 기업만 분석 가능</em></td><td>SCI 교수</td><td>Heckman 2단계 모형. IMR을 회귀에 포함. 결과의 대표성 한계를 명시.</td><td>통계적 편향 통제</td></tr>
+        <tr><td><strong>소샘플 통계 불안정</strong><br><em>60–80개사는 자유도 제한</em></td><td>SCI 교수</td><td>Bootstrap 95% CI 보고. 결과 재현성 민감도 분석. "대형 배출 기업 집중 분석"으로 프레이밍.</td><td>불확실성 정량화</td></tr>
+        <tr><td><strong>GIR Tier 이질성</strong><br><em>T1/T2/T3 기업 산정방법 차이</em></td><td>환경부 실무자</td><td>Tier를 통제변수로 포함. 동일 Tier 내 비교를 우선 보고.</td><td>방법론 차이 오탐 방지</td></tr>
+        <tr><td><strong>인과 주장 불가</strong><br><em>괴리가 "의도적"이라는 증명 불가</em></td><td>논문 리뷰어</td><td>모든 언어를 "공시 불일치"로 중립화. 기술적 발견 + 정책 우선순위로 프레이밍. 인과 주장 일절 배제.</td><td>학술적 비판 방어</td></tr>
+        <tr><td><strong>5개년 시계열 한계</strong><br><em>Mann-Kendall 5포인트 검정력 제한</em></td><td>알고리즘학자</td><td>p<0.1 기준 완화. |τ| ≥ 0.6 추가 임계값. 검정력 한계를 한계 섹션에 명시.</td><td>투명성 확보</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 09 활용 방안 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 09</div>
+    <div class="section-title">활용 방안 및 정책 제언</div>
+  </div>
+
+  <div class="three-col">
+    <div class="policy-card" style="border-top:4px solid var(--a1)">
+      <div class="policy-num" style="color:var(--a1)">01</div>
+      <div class="policy-title">KEITI 환경책임투자 플랫폼 고도화</div>
+      <div class="policy-body">본 연구에서 산출되는 기업별 괴리율·위성 일관성 점수·우선순위 등급을 KEITI 환경책임투자 플랫폼의 ESG 평가 지표에 편입. GIR 대조 검증 결과를 투자자 공개 가능한 독립 신뢰성 지수로 제공. ESG 공시 신뢰성 → 책임 투자 자본 배분의 정확성 향상.</div>
+    </div>
+    <div class="policy-card" style="border-top:4px solid var(--a2)">
+      <div class="policy-num" style="color:var(--a2)">02</div>
+      <div class="policy-title">데이터 기반 현장 검증 우선순위 체계</div>
+      <div class="policy-body">검증 우선순위 매트릭스(괴리심각도×위성불일치×Tier×검증여부)로 한정된 환경부 현장 검증 자원을 패턴 D·B 기업 및 고위험 업종(에너지·철강)에 우선 투입하는 체계 제안. 무작위 선별 대비 검증 효율성 최대화.</div>
+    </div>
+    <div class="policy-card" style="border-top:4px solid var(--a4)">
+      <div class="policy-num" style="color:var(--a4)">03</div>
+      <div class="policy-title">GIR-ESG-위성 연계 의무공시 제도 설계</div>
+      <div class="policy-body">ESG 의무공시 도입 시 ① GIR 대조 검증 절차 의무화 ② 위성 모니터링을 독립 검증 레이어로 제도화 ③ 공시-위성 불일치 기업 규제 대응 시나리오 3종(자진 수정, 검증 의무, 공시 보류) 설계안 제시. EU CBAM 대응 탄소 회계 신뢰성 확보와 직결.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────── 10 심사 매핑 ─────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">SECTION 10</div>
+    <div class="section-title">심사기준 완전 대응 매핑</div>
+  </div>
+
+  <div class="criteria-row">
+    <div class="crit-card" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <div class="crit-name" style="color:var(--a1)">분석기법 타당성</div>
+      <div class="crit-badge" style="color:var(--a1)">6.1–6.4</div>
+    </div>
+    <div class="crit-card" style="background:#f0fdf4;border:1px solid #bbf7d0">
+      <div class="crit-name" style="color:var(--a2)">데이터 전처리</div>
+      <div class="crit-badge" style="color:var(--a2)">4–5장</div>
+    </div>
+    <div class="crit-card" style="background:#ede9fe;border:1px solid #ddd6fe">
+      <div class="crit-name" style="color:var(--a3)">인사이트 독창성</div>
+      <div class="crit-badge" style="color:var(--a3)">6.4</div>
+    </div>
+    <div class="crit-card" style="background:#fef3c7;border:1px solid #fde68a">
+      <div class="crit-name" style="color:var(--a4)">결과의 유의성</div>
+      <div class="crit-badge" style="color:var(--a4)">6.5–6.6</div>
+    </div>
+    <div class="crit-card" style="background:#fdf4ff;border:1px solid #f0abfc">
+      <div class="crit-name" style="color:var(--a7)">활용 방안</div>
+      <div class="crit-badge" style="color:var(--a7)">6.7·9장</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:16%">심사 기준</th><th>이 연구의 대응 — 구체적 내용</th><th style="width:16%">차별점</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>분석기법 타당성</strong></td>
+          <td>① ERA5 기상보정(업계 표준 ACP 방법론) ② Mann-Kendall 추세 검정(비모수, 정규성 불필요) ③ IF+LOF 앙상블(단일 모델 false positive 최소화) ④ Heckman 2단계 모형(선택편향 계량 통제) ⑤ SHAP(TreeExplainer interventional, 편향 보정). 각 기법 선택에 명확한 방법론적 근거 제시. 비교 대안 기법 대비 우월성 논거 포함.</td>
+          <td>기상보정 + Mann-Kendall 조합이 국내 공시 연구에 전무</td>
+        </tr>
+        <tr>
+          <td><strong>데이터 전처리</strong></td>
+          <td>① 사업자번호 직접매칭 + fuzzy 2단계 매칭(유사도 0.85) ② GIR Tier T1/T2/T3 분류·통제 ③ 3계층 샘플(Gold/Silver/Bronze) 조직경계 불확실성 구조화 ④ MICE 결측치·IQR 이상값·코로나 컨텍스트 처리 ⑤ PDF 파싱 신뢰도 점수 ⑥ SHA-256 데이터 버전 관리. 심사위원이 "데이터를 제대로 이해하는 사람"으로 인식.</td>
+          <td>GIR Tier 통제는 실무 지식 없이 불가능</td>
+        </tr>
+        <tr>
+          <td><strong>인사이트 독창성</strong></td>
+          <td>① GIR×ESG×위성 3중 비교: 한국 기업 공시 검증에 적용 국내 최초 ② 기상보정 NO₂·SO₂ + Mann-Kendall 패턴 5종 분류 ③ 패턴 D(GIR·ESG 모두 위성과 불일치) 발견 시 연구사적 기여. 중국·EU 선행연구 있으나 한국 공시 제도 맥락 적용 전무.</td>
+          <td>국내 전무한 분석 구조</td>
+        </tr>
+        <tr>
+          <td><strong>결과의 유의성</strong></td>
+          <td>① FE 패널 회귀 + Hausman 검정 ② Heckman IMR으로 선택편향 통제 ③ 강건성 3종(클러스터SE·코로나제외·괴리정의변경) ④ Bootstrap 95% CI ⑤ SHAP 개별 설명 ⑥ Mann-Kendall p값 보고. 모든 주요 통계에 불확실성 구간 제시. "유의하다"가 아닌 "왜 유의한지"까지 설명.</td>
+          <td>Bootstrap CI + 강건성 3종 조합</td>
+        </tr>
+        <tr>
+          <td><strong>활용 방안</strong></td>
+          <td>① KEITI 환경책임투자 플랫폼 지표 편입 ② 현장 검증 우선순위 매트릭스(즉시 사용 가능한 형태) ③ GIR-ESG-위성 연계 의무공시 제도 시나리오. ESG 의무공시 의무화 일정이 미확정인 시점에 "도입 전 검증 체계 먼저 설계"라는 긴박성 논거. KEITI 심사위원이 "우리 업무에 바로 쓸 수 있다"고 느끼는 구조.</td>
+          <td>KEITI 핵심 사업 3개 직결</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="final-box">
+    <div class="fb-label">핵심 기여 — 한 문장</div>
+    <div class="fb-text">
+      "한국 코스피 상장기업의 GIR 법정 배출량·ESG 자체보고·<span class="fb-highlight">Sentinel-5P 위성 NO₂·SO₂ 신호를 기상보정 후 3중 비교</span>해, Mann-Kendall 기반 <span class="fb-highlight">공시 불일치 5종 패턴</span>을 분류하고, Heckman 모형·이상탐지 3층 구조·SHAP XAI를 통해 <span class="fb-highlight">ESG 의무공시 검증 우선순위 프레임워크</span>를 설계한다."
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

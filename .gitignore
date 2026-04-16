@@ -1,0 +1,62 @@
+# ─── Secrets ──────────────────────────────────
+.env
+.env.local
+*.key
+*credentials*.json
+*service_account*.json
+
+# ─── Data (never commit raw data) ─────────────
+data/raw/
+data/interim/
+data/processed/
+*.csv
+*.xlsx
+*.parquet
+*.pkl
+*.h5
+*.nc
+*.tif
+
+# ─── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+.conda/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ─── Notebooks outputs ────────────────────────
+# Keep notebooks but strip outputs before commit (use nbstripout)
+
+# ─── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDE ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Logs / temp ──────────────────────────────
+*.log
+tmp/
+temp/
+scratch/
+
+# ─── Large figure sources (keep final only) ──
+figs/drafts/
+figs/raw/
+
+# ─── GEE cache ────────────────────────────────
+.gee_cache/

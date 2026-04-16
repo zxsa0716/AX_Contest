@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>완전 데이터 수집 가이드</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root {
+  --bg:#0e1117; --bg2:#161b24; --bg3:#1e2530; --bg4:#252d3a;
+  --ink:#e8edf3; --ink2:#adb5c0; --ink3:#6b7585; --ink4:#3d4555;
+  --a1:#4f9cf9; --a2:#34d399; --a3:#a78bfa; --a4:#fbbf24;
+  --a5:#22d3ee; --a6:#f97316; --a7:#ec4899;
+  --red:#f87171; --green:#4ade80;
+  --b1:rgba(79,156,249,0.12); --b2:rgba(52,211,153,0.1);
+  --b3:rgba(167,139,250,0.1); --b4:rgba(251,191,36,0.1);
+  --b5:rgba(34,211,238,0.1); --b6:rgba(249,115,22,0.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);line-height:1.8;font-size:14px;font-weight:300}
+.wrap{max-width:920px;margin:0 auto;padding:40px 28px 90px}
+
+/* ── HERO ── */
+.hero{background:var(--bg2);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:32px 36px 26px;margin-bottom:32px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3),var(--a4),var(--a5),var(--a6))}
+.hero-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--a2);margin-bottom:10px}
+.hero-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.hero-desc{font-size:13px;color:var(--ink3);line-height:1.7}
+
+/* ── DATA SOURCE CARD ── */
+.ds{background:var(--bg2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:24px;overflow:hidden}
+.ds-head{display:flex;align-items:flex-start;gap:14px;padding:18px 22px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ds-badge{flex-shrink:0;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;margin-top:2px}
+.ds-info{flex:1}
+.ds-title{font-size:14.5px;font-weight:700;margin-bottom:3px}
+.ds-sub{font-size:11.5px;color:var(--ink3)}
+.ds-status{flex-shrink:0;margin-top:4px}
+.badge{display:inline-flex;align-items:center;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 9px;border-radius:3px}
+.badge-free{background:rgba(52,211,153,0.12);color:var(--a2);border:1px solid rgba(52,211,153,0.25)}
+.badge-api{background:rgba(79,156,249,0.12);color:var(--a1);border:1px solid rgba(79,156,249,0.25)}
+.badge-scrape{background:rgba(251,191,36,0.12);color:var(--a4);border:1px solid rgba(251,191,36,0.25)}
+.badge-gee{background:rgba(167,139,250,0.12);color:var(--a3);border:1px solid rgba(167,139,250,0.25)}
+
+/* ── TABS INSIDE DS ── */
+.ds-body{padding:18px 22px}
+.meta-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:14px;font-size:12px;color:var(--ink3)}
+.meta-item{display:flex;align-items:center;gap:5px}
+.meta-label{color:var(--ink4);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── STEPS ── */
+.steps{}
+.step{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:1px}
+.step-body{flex:1;font-size:12.5px;color:var(--ink2);line-height:1.75}
+.step-body strong{color:var(--ink);font-weight:700}
+.step-body a{color:var(--a1);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+
+/* ── CODE BLOCKS ── */
+.code{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:14px 16px;margin:10px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:#c9d1d9;overflow-x:auto}
+.code .comment{color:var(--ink3)}
+.code .keyword{color:var(--a3)}
+.code .string{color:var(--a2)}
+.code .fn{color:var(--a1)}
+.code .num{color:var(--a4)}
+.code .h{color:var(--ink);font-weight:600}
+
+/* ── FIELD TABLE ── */
+.ftbl{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+.ftbl th{background:var(--bg3);padding:7px 11px;text-align:left;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bg4)}
+.ftbl td{padding:7px 11px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--ink2);vertical-align:top;line-height:1.6}
+.ftbl tr:last-child td{border-bottom:none}
+.ftbl .key-col{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--a5)}
+.ftbl .use-col{font-size:11px;color:var(--a4)}
+
+/* ── WARN / INFO BOX ── */
+.warn{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:6px;padding:10px 14px;font-size:12.5px;color:var(--ink2);margin:10px 0}
+.info{background:rgba(79,156,249,0.06);border:1px solid rgba(79,156,249,0.18);border-radius:6px;padding:10px 14px;font-size:12.5px;color:var(--ink2);margin:10px 0}
+.ok{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18);border-radius:6px;padding:10px 14px;font-size:12.5px;color:var(--ink2);margin:10px 0}
+.warn strong, .info strong, .ok strong{color:var(--ink);font-weight:700}
+
+/* ── SECTION HEADER ── */
+.sec-head{margin:28px 0 16px;display:flex;align-items:center;gap:10px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:4px}
+.sec-title{font-size:15px;font-weight:700}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:28px;margin:14px 0}
+.timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:rgba(255,255,255,0.1)}
+.tl-item{position:relative;margin-bottom:14px}
+.tl-dot{position:absolute;left:-25px;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid}
+.tl-week{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.tl-content{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.tl-content strong{color:var(--ink);font-weight:700}
+
+/* ── FINAL CHECKLIST ── */
+.checklist-item{display:flex;gap:10px;padding:8px 12px;border-radius:5px;margin-bottom:6px;font-size:12.5px;align-items:flex-start}
+.check-icon{width:20px;height:20px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini{font-size:11.5px;color:var(--ink3)}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">데이터 수집 완전 가이드 · 출처 → 접근 → 코드 → 주의사항</div>
+  <div class="hero-title">7개 데이터셋 — 어디서, 어떻게, 무엇을, 어떤 코드로</div>
+  <div class="hero-desc">GIR 명세서 / ESG 보고서 PDF / DART 재무 / Sentinel-5P NO₂·SO₂ / ERA5 기상 / Kakao 지오코딩 / 국토부 행정구역 SHP — 수집부터 저장까지 실제 실행 가능한 수준으로 상세 기술</div>
+</div>
+
+<!-- ────────────── DS-A: GIR ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(79,156,249,0.15);color:var(--a1)">데이터 A</span>
+  <span class="sec-title">GIR 관리업체 명세서 배출량 — 핵심 기준값</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(79,156,249,0.15);color:var(--a1)">A</div>
+    <div class="ds-info">
+      <div class="ds-title">기후에너지환경부 온실가스종합정보센터 — 관리업체 명세서 배출량</div>
+      <div class="ds-sub">GIR 법정 배출량 · 사업장 단위 · 연도별 CSV · 무료 직접 다운로드</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-free">무료 CSV</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="info"><strong>정확한 URL:</strong> <a>https://www.data.go.kr/data/15053947/fileData.do</a> (공공데이터포털 검색: "온실가스종합정보센터 관리업체 명세서 배출량")</div>
+
+    <div class="steps" style="margin-top:14px">
+      <div class="step"><div class="step-num" style="background:rgba(79,156,249,0.15);color:var(--a1)">1</div><div class="step-body"><strong>공공데이터포털 접속</strong> → data.go.kr → 검색창에 "온실가스종합정보센터 관리업체 명세서 배출량" 입력 → 첫 번째 결과 클릭</div></div>
+      <div class="step"><div class="step-num" style="background:rgba(79,156,249,0.15);color:var(--a1)">2</div><div class="step-body"><strong>연도별 파일 다운로드:</strong> 파일데이터 탭 → 2019년 / 2020년 / 2021년 / 2022년 / 2023년 5개 파일 각각 다운로드. 파일명 예: <code style="font-family:JetBrains Mono;font-size:11.5px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">관리업체_명세서_배출량_2023.csv</code>. <strong>로그인 불필요, 무료.</strong></div></div>
+      <div class="step"><div class="step-num" style="background:rgba(79,156,249,0.15);color:var(--a1)">3</div><div class="step-body"><strong>인코딩 주의:</strong> 파일 인코딩이 EUC-KR인 경우가 많음. pandas 로드 시 반드시 encoding='cp949' 또는 encoding='euc-kr' 지정</div></div>
+      <div class="step"><div class="step-num" style="background:rgba(79,156,249,0.15);color:var(--a1)">4</div><div class="step-body"><strong>대안 채널:</strong> GIR 공식 사이트(gir.go.kr) → 정보마당 → 명세서 배출량 통계 → 연도별 다운로드 가능. 공공데이터포털보다 더 최신 데이터 있을 수 있음</div></div>
+    </div>
+
+    <div class="code"><span class="comment"># ── A. GIR 명세서 배출량 로드 및 전처리 ──────────────────────────────</span>
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> glob
+<span class="keyword">import</span> hashlib
+
+years = [<span class="num">2019</span>, <span class="num">2020</span>, <span class="num">2021</span>, <span class="num">2022</span>, <span class="num">2023</span>]
+dfs = []
+
+<span class="keyword">for</span> yr <span class="keyword">in</span> years:
+    path = <span class="string">f"data/GIR/관리업체_명세서_배출량_{yr}.csv"</span>
+    
+    <span class="comment"># SHA-256 해시 저장 (재현성 추적)</span>
+    <span class="keyword">with</span> open(path, <span class="string">'rb'</span>) <span class="keyword">as</span> f:
+        file_hash = hashlib.sha256(f.read()).<span class="fn">hexdigest</span>()
+    print(<span class="string">f"{yr}: {file_hash[:16]}..."</span>)
+    
+    df = pd.<span class="fn">read_csv</span>(path, encoding=<span class="string">'cp949'</span>)
+    df[<span class="string">'연도'</span>] = yr
+    dfs.<span class="fn">append</span>(df)
+
+gir_raw = pd.<span class="fn">concat</span>(dfs, ignore_index=<span class="keyword">True</span>)
+
+<span class="comment"># 컬럼명 확인 후 표준화</span>
+print(gir_raw.columns.<span class="fn">tolist</span>())  <span class="comment"># 실제 컬럼명 반드시 확인!</span>
+
+<span class="comment"># 사업장 단위 → 업체 단위 합산 (사업자등록번호 기준)</span>
+gir = gir_raw.<span class="fn">groupby</span>([<span class="string">'사업자등록번호'</span>, <span class="string">'업체명'</span>, <span class="string">'연도'</span>, <span class="string">'지정구분'</span>, <span class="string">'업종'</span>], dropna=<span class="keyword">False</span>).<span class="fn">agg</span>(
+    scope1_gir = (<span class="string">'Scope1_배출량(tCO2eq)'</span>, <span class="string">'sum'</span>),   <span class="comment"># 컬럼명 실제 확인 필요</span>
+    energy_tj  = (<span class="string">'에너지소비량(TJ)'</span>, <span class="string">'sum'</span>),
+    n_sites    = (<span class="string">'사업장명'</span>, <span class="string">'count'</span>)
+).<span class="fn">reset_index</span>()
+
+<span class="comment"># Tier 정보 추출 (산정방법론 코드 컬럼이 있는지 확인)</span>
+<span class="comment"># 없으면 GIR 홈페이지(gir.go.kr) 산정방법론 별도 다운로드 필요</span>
+print(<span class="string">f"총 업체 수: {gir['사업자등록번호'].nunique()}"</span>)
+print(gir.<span class="fn">head</span>())</div>
+
+    <div class="ftbl" style="margin-top:14px">
+      <table class="ftbl"><thead><tr><th>컬럼명 (예상)</th><th>설명</th><th class="key-col">역할</th><th class="use-col">중요도</th></tr></thead>
+      <tbody>
+        <tr><td>사업자등록번호</td><td>10자리 사업자번호. 하이픈(-) 포함/미포함 혼재 → 정제 필수</td><td class="key-col">매칭 주키</td><td class="use-col">★★★★★</td></tr>
+        <tr><td>업체명</td><td>법인명. KRX/DART와 fuzzy 매칭용</td><td class="key-col">보조 매칭</td><td class="use-col">★★★★</td></tr>
+        <tr><td>Scope1_배출량 or 직접배출량</td><td>단위: tCO₂eq. 총배출량과 구분 필수</td><td class="key-col">핵심 비교값</td><td class="use-col">★★★★★</td></tr>
+        <tr><td>지정구분</td><td>배출권거래제 / 목표관리제 구분</td><td class="key-col">통제변수</td><td class="use-col">★★★</td></tr>
+        <tr><td>산정방법론 or Tier코드</td><td>T1/T2/T3. 없으면 별도 요청 필요</td><td class="key-col">Tier 통제</td><td class="use-col">★★★★</td></tr>
+        <tr><td>에너지소비량(TJ)</td><td>기업 규모 대리 변수</td><td class="key-col">통제변수</td><td class="use-col">★★★</td></tr>
+      </tbody></table>
+    </div>
+    <div class="warn"><strong>⚠ 반드시 확인:</strong> 컬럼명이 연도마다 다를 수 있음. 각 파일 로드 후 <code style="font-family:JetBrains Mono;font-size:11px">df.columns.tolist()</code>로 확인. "총배출량"이 아닌 "직접배출량(Scope 1)"만 사용해야 함. 총배출량에는 간접 배출 포함.</div>
+  </div>
+</div>
+
+<!-- ────────────── DS-A2: GIR 주소 ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(79,156,249,0.15);color:var(--a1)">데이터 A-2</span>
+  <span class="sec-title">GIR 할당대상업체 지정 현황 — 사업장 주소 (위성 버퍼용)</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(79,156,249,0.15);color:var(--a1)">A2</div>
+    <div class="ds-info">
+      <div class="ds-title">온실가스종합정보센터 — 할당대상업체 지정 현황</div>
+      <div class="ds-sub">배출권거래제 + 목표관리제 사업장 주소 포함 · 무료 CSV</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-free">무료 CSV</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="info"><strong>URL:</strong> data.go.kr 검색 → "온실가스종합정보센터 할당대상업체 지정" (2024-02-26 업데이트, 조회 19535회)</div>
+    <div class="code"><span class="comment"># ── A-2. 사업장 주소 → 위경도 변환 ──────────────────────────────────</span>
+<span class="keyword">import</span> requests, time, json
+
+<span class="comment"># Kakao Local API 키 발급: https://developers.kakao.com → 내 애플리케이션 → REST API 키</span>
+KAKAO_KEY = <span class="string">"YOUR_KAKAO_REST_API_KEY"</span>
+
+<span class="keyword">def</span> <span class="fn">geocode_kakao</span>(address):
+    url = <span class="string">"https://dapi.kakao.com/v2/local/search/address.json"</span>
+    headers = {<span class="string">"Authorization"</span>: <span class="string">f"KakaoAK {KAKAO_KEY}"</span>}
+    params = {<span class="string">"query"</span>: address, <span class="string">"analyze_type"</span>: <span class="string">"exact"</span>}
+    r = requests.<span class="fn">get</span>(url, headers=headers, params=params)
+    docs = r.<span class="fn">json</span>().<span class="fn">get</span>(<span class="string">'documents'</span>, [])
+    <span class="keyword">if</span> docs:
+        <span class="keyword">return</span> float(docs[<span class="num">0</span>][<span class="string">'y'</span>]), float(docs[<span class="num">0</span>][<span class="string">'x'</span>])  <span class="comment"># lat, lon</span>
+    <span class="keyword">return</span> <span class="keyword">None</span>, <span class="keyword">None</span>
+
+<span class="comment"># 전체 사업장 지오코딩 (rate limit: 초당 10회)</span>
+addr_df = pd.<span class="fn">read_csv</span>(<span class="string">"data/GIR/할당대상업체_지정현황.csv"</span>, encoding=<span class="string">'cp949'</span>)
+
+lats, lons = [], []
+<span class="keyword">for</span> addr <span class="keyword">in</span> addr_df[<span class="string">'주소지'</span>]:
+    lat, lon = <span class="fn">geocode_kakao</span>(str(addr))
+    lats.<span class="fn">append</span>(lat); lons.<span class="fn">append</span>(lon)
+    time.<span class="fn">sleep</span>(<span class="num">0.1</span>)  <span class="comment"># rate limit 준수</span>
+
+addr_df[<span class="string">'lat'</span>] = lats; addr_df[<span class="string">'lon'</span>] = lons
+<span class="comment"># 변환 실패 케이스 → Google Maps API 또는 수동 입력</span>
+failed = addr_df[addr_df[<span class="string">'lat'</span>].<span class="fn">isna</span>()]
+print(<span class="string">f"지오코딩 실패: {len(failed)}건"</span>)</div>
+    <div class="warn"><strong>⚠ Kakao API 무료 한도:</strong> 하루 300,000건. 사업장 수 수백 개 수준이면 무료 한도 이내. 대안: Google Maps Geocoding API (유료, 정확도 높음).</div>
+  </div>
+</div>
+
+<!-- ────────────── DS-B: ESG PDF ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(251,191,36,0.15);color:var(--a4)">데이터 B</span>
+  <span class="sec-title">KRX ESG 포털 + DART — 지속가능경영보고서 PDF</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(251,191,36,0.15);color:var(--a4)">B</div>
+    <div class="ds-info">
+      <div class="ds-title">KRX ESG 포털 지속가능경영보고서 + DART 공시 PDF 직접 다운로드</div>
+      <div class="ds-sub">자체보고 Scope 1 · GRI 305-1 항목 · PDF 파싱 필요 · 가장 시간 소요</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-scrape">크롤링+파싱</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="two-col">
+      <div>
+        <div class="info" style="margin-bottom:8px"><strong>KRX ESG 포털:</strong> esg.krx.co.kr → ESG 기업정보 → 지속가능경영보고서 → 보고서 조회. 연도·기업명으로 필터링. PDF 다운로드 링크 노출.</div>
+        <div class="info"><strong>DART 보완:</strong> dart.fss.or.kr → 공시통합검색 → 서류명 "지속가능경영보고서" 검색 → PDF 파일 직접 다운로드. KRX에 없는 기업 보완용.</div>
+      </div>
+      <div>
+        <div class="warn"><strong>실전 팁:</strong> KRX ESG 포털에서 GRI 305-1 항목 직접 조회 가능. "참고정보 조회" → GRI 기준 → 305-1 항목 검색하면 기업이 공시한 수치를 웹에서 바로 볼 수 있음. PDF 파싱 전에 이걸 먼저 활용하면 파싱 작업 40% 절약.</div>
+      </div>
+    </div>
+
+    <div class="code"><span class="comment"># ── STEP 1: KRX ESG 포털 보고서 목록 크롤링 ─────────────────────────</span>
+<span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver
+<span class="keyword">from</span> selenium.webdriver.common.by <span class="keyword">import</span> By
+<span class="keyword">import</span> time, requests, os
+
+<span class="comment"># Chrome WebDriver 사용 (Selenium 4.x)</span>
+options = webdriver.ChromeOptions()
+options.<span class="fn">add_argument</span>(<span class="string">'--headless'</span>)
+driver = webdriver.<span class="fn">Chrome</span>(options=options)
+driver.<span class="fn">get</span>(<span class="string">'https://esg.krx.co.kr/contents/02/02030200/ESG02030200.jsp'</span>)
+
+<span class="comment"># 연도 선택 + 전체 기업 목록 → PDF 링크 수집</span>
+<span class="comment"># (실제 셀렉터는 개발자 도구로 확인 필요)</span>
+pdf_links = []
+<span class="comment"># ...</span>
+
+<span class="comment"># ── STEP 2: GRI 305-1 참고정보 직접 조회 (PDF 파싱 대체) ────────────</span>
+<span class="comment"># URL 패턴: https://esg.krx.co.kr/contents/02/02030000/ESG02030000.jsp</span>
+<span class="comment"># 기업코드별 GRI 공시 데이터 JSON API가 있는지 확인 후 활용</span>
+
+<span class="comment"># ── STEP 3: PDF 다운로드 ─────────────────────────────────────────────</span>
+<span class="keyword">import</span> os
+<span class="keyword">def</span> <span class="fn">download_pdf</span>(url, save_path):
+    <span class="keyword">if</span> os.path.<span class="fn">exists</span>(save_path): <span class="keyword">return</span>  <span class="comment"># 이미 있으면 스킵</span>
+    r = requests.<span class="fn">get</span>(url, timeout=<span class="num">30</span>)
+    <span class="keyword">with</span> open(save_path, <span class="string">'wb'</span>) <span class="keyword">as</span> f:
+        f.<span class="fn">write</span>(r.content)
+    time.<span class="fn">sleep</span>(<span class="num">1</span>)  <span class="comment"># 서버 부하 방지</span></div>
+
+    <div class="code"><span class="comment"># ── STEP 4: PDF → Scope 1 수치 파싱 ─────────────────────────────────</span>
+<span class="keyword">import</span> pdfplumber, re
+
+<span class="keyword">def</span> <span class="fn">extract_scope1</span>(pdf_path):
+    <span class="string">"""
+    전략: GRI 인덱스 페이지에서 305-1 항목 페이지 번호 먼저 찾기
+    → 해당 페이지만 집중 파싱 (전체 파싱 대비 80% 빠름)
+    """</span>
+    result = {<span class="string">'scope1'</span>: <span class="keyword">None</span>, <span class="string">'unit'</span>: <span class="keyword">None</span>, <span class="string">'confidence'</span>: <span class="string">'LOW'</span>}
+    
+    <span class="keyword">with</span> pdfplumber.<span class="fn">open</span>(pdf_path) <span class="keyword">as</span> pdf:
+        <span class="comment"># 1차: GRI 인덱스에서 305-1 페이지 찾기</span>
+        target_page = <span class="keyword">None</span>
+        <span class="keyword">for</span> i, page <span class="keyword">in</span> enumerate(pdf.pages):
+            text = page.<span class="fn">extract_text</span>() <span class="keyword">or</span> <span class="string">''</span>
+            <span class="keyword">if</span> <span class="string">'305-1'</span> <span class="keyword">in</span> text <span class="keyword">and</span> <span class="string">'GRI'</span> <span class="keyword">in</span> text:
+                <span class="comment"># 페이지 번호 추출 시도</span>
+                match = re.<span class="fn">search</span>(<span class="string">r'305-1.*?(\d{1,3})'</span>, text)
+                <span class="keyword">if</span> match:
+                    target_page = <span class="fn">int</span>(match.<span class="fn">group</span>(<span class="num">1</span>)) - <span class="num">1</span>  <span class="comment"># 0-indexed</span>
+                    <span class="keyword">break</span>
+        
+        <span class="comment"># 2차: 타겟 페이지 또는 전체에서 tCO2 숫자 패턴 검색</span>
+        search_pages = [pdf.pages[target_page]] <span class="keyword">if</span> target_page <span class="keyword">else</span> pdf.pages
+        
+        patterns = [
+            r'[Ss]cope\s*1.*?([\d,\.]+)\s*(?:tCO2eq?|tCO₂e?q?|천\s*tCO|MtCO)',
+            r'직접\s*배출.*?([\d,\.]+)\s*(?:tCO2|tCO₂|천톤)',
+            r'GRI\s*305-1.*?([\d,\.]+)',
+        ]
+        
+        <span class="keyword">for</span> page <span class="keyword">in</span> search_pages:
+            text = page.<span class="fn">extract_text</span>() <span class="keyword">or</span> <span class="string">''</span>
+            <span class="comment"># 표 구조 시도</span>
+            tables = page.<span class="fn">extract_tables</span>()
+            <span class="keyword">for</span> table <span class="keyword">in</span> tables:
+                <span class="keyword">for</span> row <span class="keyword">in</span> table:
+                    row_text = <span class="string">' '</span>.<span class="fn">join</span>([str(c) <span class="keyword">for</span> c <span class="keyword">in</span> row <span class="keyword">if</span> c])
+                    <span class="keyword">if</span> <span class="string">'305-1'</span> <span class="keyword">in</span> row_text <span class="keyword">or</span> <span class="string">'Scope 1'</span> <span class="keyword">in</span> row_text:
+                        nums = re.<span class="fn">findall</span>(<span class="string">r'[\d,]+\.?\d*'</span>, row_text)
+                        <span class="keyword">if</span> nums:
+                            result[<span class="string">'scope1'</span>] = nums[<span class="num">0</span>].<span class="fn">replace</span>(<span class="string">','</span>, <span class="string">''</span>)
+                            result[<span class="string">'confidence'</span>] = <span class="string">'MEDIUM'</span>
+    
+    <span class="keyword">return</span> result
+
+<span class="comment"># 단위 통일 함수</span>
+<span class="keyword">def</span> <span class="fn">normalize_unit</span>(value_str, unit_hint):
+    val = <span class="fn">float</span>(value_str.<span class="fn">replace</span>(<span class="string">','</span>,<span class="string">''</span>))
+    <span class="keyword">if</span> <span class="string">'천톤'</span> <span class="keyword">in</span> unit_hint <span class="keyword">or</span> <span class="string">'kt'</span> <span class="keyword">in</span> unit_hint: val *= <span class="num">1000</span>
+    <span class="keyword">if</span> <span class="string">'백만'</span> <span class="keyword">in</span> unit_hint <span class="keyword">or</span> <span class="string">'Mt'</span> <span class="keyword">in</span> unit_hint: val *= <span class="num">1_000_000</span>
+    <span class="keyword">return</span> val  <span class="comment"># 최종 단위: tCO₂eq</span></div>
+
+    <div class="ok"><strong>✓ KRX 참고정보 조회 활용 우선:</strong> PDF 파싱 전에 KRX ESG 포털 "참고정보 조회" 탭에서 GRI 305-1 항목을 먼저 확인. 기업이 웹에 직접 수치를 입력한 경우 파싱 없이 바로 수집 가능. 파싱 신뢰도 HIGH 자동 부여.</div>
+  </div>
+</div>
+
+<!-- ────────────── DS-C: 위성 NO2 ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(167,139,250,0.15);color:var(--a3)">데이터 C</span>
+  <span class="sec-title">Sentinel-5P TROPOMI NO₂ · SO₂ — Google Earth Engine</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(167,139,250,0.15);color:var(--a3)">C</div>
+    <div class="ds-info">
+      <div class="ds-title">Sentinel-5P TROPOMI NO₂ + SO₂ — Google Earth Engine Python API</div>
+      <div class="ds-sub">2018–현재 · 3.5×5.5km 해상도 · 무료 (GEE 계정 필요) · 월별 컴포짓 사용</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-gee">GEE Python</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="steps">
+      <div class="step"><div class="step-num" style="background:rgba(167,139,250,0.15);color:var(--a3)">1</div><div class="step-body"><strong>GEE 계정 신청:</strong> <a>https://earthengine.google.com</a> → Sign Up → 학술 용도 선택 → 대학 이메일로 신청. 승인까지 1–3일. 기존 Google 계정으로 등록 가능.</div></div>
+      <div class="step"><div class="step-num" style="background:rgba(167,139,250,0.15);color:var(--a3)">2</div><div class="step-body"><strong>Python 환경 설정:</strong> <code style="font-family:JetBrains Mono;font-size:11.5px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">pip install earthengine-api geemap</code> → <code style="font-family:JetBrains Mono;font-size:11px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">ee.Authenticate()</code> → <code style="font-family:JetBrains Mono;font-size:11px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">ee.Initialize()</code></div></div>
+      <div class="step"><div class="step-num" style="background:rgba(167,139,250,0.15);color:var(--a3)">3</div><div class="step-body"><strong>컬렉션 ID:</strong> NO₂는 <code style="font-family:JetBrains Mono;font-size:11.5px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">COPERNICUS/S5P/OFFL/L3_NO2</code>, SO₂는 <code style="font-family:JetBrains Mono;font-size:11.5px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">COPERNICUS/S5P/OFFL/L3_SO2</code></div></div>
+    </div>
+
+    <div class="code"><span class="comment"># ── C. Sentinel-5P NO₂·SO₂ 추출 완전 코드 ───────────────────────────</span>
+<span class="keyword">import</span> ee
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm
+
+ee.<span class="fn">Initialize</span>()
+
+<span class="keyword">def</span> <span class="fn">get_monthly_no2_so2</span>(lat, lon, company_id, buffer_m=<span class="num">10000</span>):
+    <span class="string">"""
+    사업장 좌표(lat, lon) 중심 buffer_m 반경의 월별 NO₂·SO₂ 추출
+    Returns: DataFrame with columns [year, month, no2_mean, so2_mean]
+    """</span>
+    point = ee.Geometry.<span class="fn">Point</span>([lon, lat])
+    roi = point.<span class="fn">buffer</span>(buffer_m)
+    
+    results = []
+    
+    <span class="keyword">for</span> year <span class="keyword">in</span> range(<span class="num">2019</span>, <span class="num">2024</span>):
+        <span class="keyword">for</span> month <span class="keyword">in</span> range(<span class="num">1</span>, <span class="num">13</span>):
+            start = <span class="string">f'{year}-{month:02d}-01'</span>
+            end_m = month + <span class="num">1</span> <span class="keyword">if</span> month &lt; <span class="num">12</span> <span class="keyword">else</span> <span class="num">1</span>
+            end_y = year <span class="keyword">if</span> month &lt; <span class="num">12</span> <span class="keyword">else</span> year + <span class="num">1</span>
+            end   = <span class="string">f'{end_y}-{end_m:02d}-01'</span>
+            
+            <span class="comment"># NO₂ 월별 컴포짓 (qa_value ≥ 0.75 필터)</span>
+            no2_col = (ee.ImageCollection(<span class="string">'COPERNICUS/S5P/OFFL/L3_NO2'</span>)
+                        .<span class="fn">filterDate</span>(start, end)
+                        .<span class="fn">filterBounds</span>(roi)
+                        .<span class="fn">filter</span>(ee.Filter.<span class="fn">gt</span>(<span class="string">'qa_value'</span>, <span class="num">0.75</span>))
+                        .<span class="fn">select</span>(<span class="string">'tropospheric_NO2_column_number_density'</span>)
+                        .<span class="fn">mean</span>())
+            
+            <span class="comment"># SO₂ 월별 컴포짓</span>
+            so2_col = (ee.ImageCollection(<span class="string">'COPERNICUS/S5P/OFFL/L3_SO2'</span>)
+                        .<span class="fn">filterDate</span>(start, end)
+                        .<span class="fn">filterBounds</span>(roi)
+                        .<span class="fn">filter</span>(ee.Filter.<span class="fn">gt</span>(<span class="string">'qa_value'</span>, <span class="num">0.5</span>))
+                        .<span class="fn">select</span>(<span class="string">'SO2_column_number_density'</span>)
+                        .<span class="fn">mean</span>())
+            
+            <span class="comment"># 버퍼 내 평균 추출</span>
+            no2_val = no2_col.<span class="fn">reduceRegion</span>(
+                reducer=ee.Reducer.<span class="fn">mean</span>(), geometry=roi, scale=<span class="num">3500</span>
+            ).<span class="fn">get</span>(<span class="string">'tropospheric_NO2_column_number_density'</span>).<span class="fn">getInfo</span>()
+            
+            so2_val = so2_col.<span class="fn">reduceRegion</span>(
+                reducer=ee.Reducer.<span class="fn">mean</span>(), geometry=roi, scale=<span class="num">3500</span>
+            ).<span class="fn">get</span>(<span class="string">'SO2_column_number_density'</span>).<span class="fn">getInfo</span>()
+            
+            results.<span class="fn">append</span>({
+                <span class="string">'company_id'</span>: company_id, <span class="string">'year'</span>: year, <span class="string">'month'</span>: month,
+                <span class="string">'no2_mol_m2'</span>: no2_val, <span class="string">'so2_du'</span>: so2_val
+            })
+    
+    <span class="keyword">return</span> pd.<span class="fn">DataFrame</span>(results)
+
+<span class="comment"># 연간 평균 집계 (월평균 단순 평균 → 연간 평균)</span>
+<span class="keyword">def</span> <span class="fn">monthly_to_annual</span>(df):
+    <span class="keyword">return</span> df.<span class="fn">groupby</span>([<span class="string">'company_id'</span>, <span class="string">'year'</span>]).<span class="fn">agg</span>(
+        no2_annual=(<span class="string">'no2_mol_m2'</span>, <span class="string">'mean'</span>),
+        so2_annual=(<span class="string">'so2_du'</span>, <span class="string">'mean'</span>),
+        n_months=(<span class="string">'month'</span>, <span class="string">'count'</span>)  <span class="comment"># 유효 데이터 개월 수 확인용</span>
+    ).<span class="fn">reset_index</span>()</div>
+
+    <div class="warn"><strong>⚠ GEE 할당량:</strong> 무료 계정은 동시 작업 수 제한 있음. 기업 80개 × 5년 × 12개월 = 4,800회 API 호출. time.sleep(0.5) 삽입 및 배치 처리 권장. 또는 GEE JavaScript 코드에디터로 전체 컴포짓 생성 후 Google Drive로 내보내기(Export.table.toDrive) 방법이 더 안정적.</div>
+
+    <div class="code"><span class="comment"># ── GEE Export 방식 (더 안정적, 대용량 처리) ─────────────────────────</span>
+<span class="comment"># GEE 코드에디터(code.earthengine.google.com)에서 실행 후 Drive 저장</span>
+<span class="comment">"""
+JavaScript 코드 (GEE 코드에디터에서 실행):
+
+var sites = ee.FeatureCollection([
+  ee.Feature(ee.Geometry.Point([129.3167, 35.5384]), {id: 'POSCO_포항'}),
+  ee.Feature(ee.Geometry.Point([129.2833, 35.5152]), {id: '현대제철_포항'}),
+  // ... 전체 사업장 좌표 추가
+]);
+
+var no2 = ee.ImageCollection('COPERNICUS/S5P/OFFL/L3_NO2')
+  .filterDate('2019-01-01','2024-01-01')
+  .filter(ee.Filter.gt('qa_value', 0.75))
+  .select('tropospheric_NO2_column_number_density');
+
+// 연간 평균 계산
+var years = ee.List.sequence(2019, 2023);
+var annual = ee.ImageCollection(years.map(function(y){
+  var img = no2.filter(ee.Filter.calendarRange(y,y,'year')).mean();
+  return img.set('year', y);
+}));
+
+// 사업장별 통계 추출 및 Drive 저장
+Export.table.toDrive({
+  collection: annual.map(function(img){
+    return img.reduceRegions({
+      collection: sites.map(function(f){ return f.buffer(10000); }),
+      reducer: ee.Reducer.mean(),
+      scale: 3500
+    }).map(function(f){ return f.set('year', img.get('year')); });
+  }).flatten(),
+  description: 'NO2_annual_by_site',
+  fileFormat: 'CSV'
+});
+"""</span></div>
+  </div>
+</div>
+
+<!-- ────────────── DS-D: ERA5 ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(34,211,153,0.15);color:var(--a2)">데이터 D</span>
+  <span class="sec-title">ERA5 기상 재분석 — GEE 동일 플랫폼 접근</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(34,211,153,0.15);color:var(--a2)">D</div>
+    <div class="ds-info">
+      <div class="ds-title">ECMWF ERA5-Land 시간별 데이터 — GEE ECMWF/ERA5_LAND/HOURLY</div>
+      <div class="ds-sub">풍속·강수·기온·경계층 높이 · 0.1° × 0.1° 해상도 · 기상보정 핵심</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-gee">GEE Python</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="code"><span class="comment"># ── D. ERA5 기상변수 추출 ─────────────────────────────────────────────</span>
+<span class="keyword">def</span> <span class="fn">get_monthly_era5</span>(lat, lon, company_id, buffer_m=<span class="num">10000</span>):
+    <span class="string">"""풍속·강수·기온·경계층 높이 월별 평균 추출"""</span>
+    point = ee.Geometry.<span class="fn">Point</span>([lon, lat])
+    roi = point.<span class="fn">buffer</span>(buffer_m)
+    
+    era5 = ee.ImageCollection(<span class="string">'ECMWF/ERA5_LAND/HOURLY'</span>)
+    results = []
+    
+    <span class="keyword">for</span> year <span class="keyword">in</span> range(<span class="num">2019</span>, <span class="num">2024</span>):
+        <span class="keyword">for</span> month <span class="keyword">in</span> range(<span class="num">1</span>, <span class="num">13</span>):
+            start = <span class="string">f'{year}-{month:02d}-01'</span>
+            end_m = month + <span class="num">1</span> <span class="keyword">if</span> month &lt; <span class="num">12</span> <span class="keyword">else</span> <span class="num">1</span>
+            end_y = year <span class="keyword">if</span> month &lt; <span class="num">12</span> <span class="keyword">else</span> year + <span class="num">1</span>
+            end   = <span class="string">f'{end_y}-{end_m:02d}-01'</span>
+            
+            monthly = (era5
+                .<span class="fn">filterDate</span>(start, end)
+                .<span class="fn">filterBounds</span>(roi)
+                .<span class="fn">select</span>([
+                    <span class="string">'u_component_of_wind_10m'</span>,  <span class="comment"># u10: 동-서 풍속</span>
+                    <span class="string">'v_component_of_wind_10m'</span>,  <span class="comment"># v10: 남-북 풍속</span>
+                    <span class="string">'total_precipitation_hourly'</span>, <span class="comment"># tp: 강수량</span>
+                    <span class="string">'temperature_2m'</span>,             <span class="comment"># t2m: 2m 기온</span>
+                    <span class="string">'boundary_layer_height'</span>       <span class="comment"># blh: 경계층 높이</span>
+                ])
+                .<span class="fn">mean</span>())
+            
+            stats = monthly.<span class="fn">reduceRegion</span>(
+                reducer=ee.Reducer.<span class="fn">mean</span>(),
+                geometry=roi, scale=<span class="num">11000</span>  <span class="comment"># ERA5 네이티브 해상도 ~11km</span>
+            ).<span class="fn">getInfo</span>()
+            
+            <span class="comment"># 풍속 크기 계산: sqrt(u^2 + v^2)</span>
+            u = stats.<span class="fn">get</span>(<span class="string">'u_component_of_wind_10m'</span>, <span class="num">0</span>)
+            v = stats.<span class="fn">get</span>(<span class="string">'v_component_of_wind_10m'</span>, <span class="num">0</span>)
+            wind_speed = (u**<span class="num">2</span> + v**<span class="num">2</span>)**<span class="num">0.5</span> <span class="keyword">if</span> u <span class="keyword">and</span> v <span class="keyword">else</span> <span class="keyword">None</span>
+            
+            results.<span class="fn">append</span>({
+                <span class="string">'company_id'</span>: company_id, <span class="string">'year'</span>: year, <span class="string">'month'</span>: month,
+                <span class="string">'wind_speed_ms'</span>: wind_speed,
+                <span class="string">'u10'</span>: u, <span class="string">'v10'</span>: v,
+                <span class="string">'precip_m'</span>: stats.<span class="fn">get</span>(<span class="string">'total_precipitation_hourly'</span>),
+                <span class="string">'temp_k'</span>: stats.<span class="fn">get</span>(<span class="string">'temperature_2m'</span>),
+                <span class="string">'blh_m'</span>: stats.<span class="fn">get</span>(<span class="string">'boundary_layer_height'</span>)
+            })
+    
+    <span class="keyword">return</span> pd.<span class="fn">DataFrame</span>(results)</div>
+    <div class="ok"><strong>✓ NO₂와 동시 추출:</strong> 기업 좌표를 한 번만 지정하면 NO₂·SO₂·ERA5를 같은 루프에서 동시 추출 가능. 별도 루프 돌리면 API 호출 3배 증가.</div>
+  </div>
+</div>
+
+<!-- ────────────── DS-E: DART ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(249,115,22,0.15);color:var(--a6)">데이터 E</span>
+  <span class="sec-title">DART Open API — 재무 정보 + 기업 기본 정보</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(249,115,22,0.15);color:var(--a6)">E</div>
+    <div class="ds-info">
+      <div class="ds-title">금융감독원 DART Open API — 사업보고서·재무제표·기업 기본정보</div>
+      <div class="ds-sub">API 키 무료 발급 · 일 10,000건 무료 · Python 라이브러리 opendartreader 활용</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-api">무료 API</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="steps">
+      <div class="step"><div class="step-num" style="background:rgba(249,115,22,0.15);color:var(--a6)">1</div><div class="step-body"><strong>API 키 발급:</strong> <a>https://opendart.fss.or.kr</a> → 인증키 신청/관리 → 인증키 신청 → 개인 또는 기관 선택 → 즉시 발급 (이메일 인증 후 사용)</div></div>
+      <div class="step"><div class="step-num" style="background:rgba(249,115,22,0.15);color:var(--a6)">2</div><div class="step-body"><strong>라이브러리 설치:</strong> <code style="font-family:JetBrains Mono;font-size:11.5px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:3px">pip install opendartreader</code> (비공식 래퍼로 더 간편)</div></div>
+    </div>
+
+    <div class="code"><span class="comment"># ── E. DART API 재무정보 수집 ────────────────────────────────────────</span>
+<span class="keyword">import</span> OpenDartReader <span class="keyword">as</span> odr  <span class="comment"># pip install opendartreader</span>
+<span class="keyword">import</span> requests, zipfile
+<span class="keyword">from</span> io <span class="keyword">import</span> BytesIO
+<span class="keyword">import</span> xmltodict
+
+DART_KEY = <span class="string">"YOUR_DART_API_KEY"</span>
+dart = odr.<span class="fn">OpenDartReader</span>(DART_KEY)
+
+<span class="comment"># ── STEP 1: 전체 기업 고유번호 목록 다운로드 ────────────────────────</span>
+url = <span class="string">f"https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key={DART_KEY}"</span>
+res = requests.<span class="fn">get</span>(url)
+corp_zip = zipfile.<span class="fn">ZipFile</span>(BytesIO(res.content))
+corp_xml = corp_zip.<span class="fn">read</span>(<span class="string">'CORPCODE.xml'</span>)
+corp_dict = xmltodict.<span class="fn">parse</span>(corp_xml)
+
+corp_df = pd.<span class="fn">DataFrame</span>(corp_dict[<span class="string">'result'</span>][<span class="string">'list'</span>])
+<span class="comment"># corp_code: DART 고유번호, stock_code: 종목코드(상장사만 있음), corp_name: 기업명</span>
+listed = corp_df[corp_df[<span class="string">'stock_code'</span>].notna()]  <span class="comment"># 상장사만 필터</span>
+print(<span class="string">f"상장사 수: {len(listed)}"</span>)
+
+<span class="comment"># ── STEP 2: 코스피 200 종목코드 → corp_code 매핑 ────────────────────</span>
+<span class="comment"># 코스피 200 구성종목: KRX 홈페이지(krx.co.kr) → 지수 → 코스피200 → 구성종목 Excel 다운로드</span>
+kospi200 = pd.<span class="fn">read_excel</span>(<span class="string">"data/KOSPI200_종목.xlsx"</span>)
+kospi200 = kospi200.<span class="fn">merge</span>(listed, left_on=<span class="string">'종목코드'</span>, right_on=<span class="string">'stock_code'</span>, how=<span class="string">'left'</span>)
+
+<span class="comment"># ── STEP 3: 연도별 재무제표 수집 ─────────────────────────────────────</span>
+fin_data = []
+<span class="keyword">for</span> _, row <span class="keyword">in</span> kospi200.<span class="fn">iterrows</span>():
+    corp_code = row[<span class="string">'corp_code'</span>]
+    <span class="keyword">if</span> pd.<span class="fn">isna</span>(corp_code): <span class="keyword">continue</span>
+    
+    <span class="keyword">for</span> year <span class="keyword">in</span> range(<span class="num">2019</span>, <span class="num">2024</span>):
+        <span class="keyword">try</span>:
+            <span class="comment"># 연결재무제표 우선, 없으면 개별</span>
+            fs = dart.<span class="fn">finstate_all</span>(corp_code, year, <span class="string">'CFS'</span>)  <span class="comment"># CFS: 연결, OFS: 개별</span>
+            <span class="keyword">if</span> fs <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> len(fs) == <span class="num">0</span>:
+                fs = dart.<span class="fn">finstate_all</span>(corp_code, year, <span class="string">'OFS'</span>)
+            
+            <span class="keyword">if</span> fs <span class="keyword">is not</span> <span class="keyword">None</span>:
+                <span class="comment"># 매출액, 자산총계 추출</span>
+                revenue = fs[fs[<span class="string">'account_nm'</span>].<span class="fn">str</span>.<span class="fn">contains</span>(<span class="string">'매출액|수익'</span>, na=<span class="keyword">False</span>)]
+                assets = fs[fs[<span class="string">'account_nm'</span>].<span class="fn">str</span>.<span class="fn">contains</span>(<span class="string">'자산총계|자산 합계'</span>, na=<span class="keyword">False</span>)]
+                
+                fin_data.<span class="fn">append</span>({
+                    <span class="string">'corp_code'</span>: corp_code,
+                    <span class="string">'corp_name'</span>: row[<span class="string">'corp_name'</span>],
+                    <span class="string">'stock_code'</span>: row[<span class="string">'stock_code'</span>],
+                    <span class="string">'year'</span>: year,
+                    <span class="string">'revenue'</span>: revenue[<span class="string">'thstrm_amount'</span>].<span class="fn">iloc</span>[<span class="num">0</span>] <span class="keyword">if</span> len(revenue) > <span class="num">0</span> <span class="keyword">else</span> <span class="keyword">None</span>,
+                    <span class="string">'total_assets'</span>: assets[<span class="string">'thstrm_amount'</span>].<span class="fn">iloc</span>[<span class="num">0</span>] <span class="keyword">if</span> len(assets) > <span class="num">0</span> <span class="keyword">else</span> <span class="keyword">None</span>
+                })
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            print(<span class="string">f"Error {corp_code} {year}: {e}"</span>)
+            <span class="keyword">continue</span>
+        time.<span class="fn">sleep</span>(<span class="num">0.3</span>)  <span class="comment"># rate limit</span>
+
+fin_df = pd.<span class="fn">DataFrame</span>(fin_data)</div>
+    <div class="info"><strong>사업자번호 확보:</strong> DART API의 기업개황 endpoint → <code style="font-family:JetBrains Mono;font-size:11.5px">bizr_no</code> 필드가 사업자등록번호. GIR과 직접 매칭 가능. <a>https://opendart.fss.or.kr/api/company.json?corp_code=...&crtfc_key=...</a></div>
+  </div>
+</div>
+
+<!-- ────────────── DS-F: 기업 매칭 ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(236,72,153,0.15);color:var(--a7)">통합</span>
+  <span class="sec-title">기업 식별자 통합 매칭 — GIR ↔ DART ↔ KRX</span>
+</div>
+<div class="ds">
+  <div class="ds-head">
+    <div class="ds-badge" style="background:rgba(236,72,153,0.15);color:var(--a7)">M</div>
+    <div class="ds-info">
+      <div class="ds-title">3개 데이터 소스 기업 식별자 통합 매칭 파이프라인</div>
+      <div class="ds-sub">사업자번호 직접 매칭 → RapidFuzz fuzzy → 수동 검수 3단계</div>
+    </div>
+    <div class="ds-status"><span class="badge badge-scrape">전처리</span></div>
+  </div>
+  <div class="ds-body">
+    <div class="code"><span class="comment"># ── 통합 매칭 파이프라인 ──────────────────────────────────────────────</span>
+<span class="keyword">from</span> rapidfuzz <span class="keyword">import</span> fuzz, process
+<span class="keyword">import</span> re
+
+<span class="comment"># ── 1단계: 사업자번호 직접 매칭 (오차 0) ─────────────────────────────</span>
+<span class="keyword">def</span> <span class="fn">normalize_bizno</span>(bizno):
+    <span class="string">"""하이픈 제거, 10자리 숫자 표준화"""</span>
+    <span class="keyword">if</span> pd.<span class="fn">isna</span>(bizno): <span class="keyword">return</span> <span class="keyword">None</span>
+    <span class="keyword">return</span> re.<span class="fn">sub</span>(<span class="string">r'[^0-9]'</span>, <span class="string">''</span>, str(bizno)).<span class="fn">zfill</span>(<span class="num">10</span>)
+
+gir[<span class="string">'bizno_clean'</span>] = gir[<span class="string">'사업자등록번호'</span>].<span class="fn">apply</span>(normalize_bizno)
+dart_fin[<span class="string">'bizno_clean'</span>] = dart_fin[<span class="string">'bizr_no'</span>].<span class="fn">apply</span>(normalize_bizno)
+
+merged_direct = gir.<span class="fn">merge</span>(dart_fin, on=<span class="string">'bizno_clean'</span>, how=<span class="string">'inner'</span>)
+print(<span class="string">f"직접 매칭 성공: {len(merged_direct['bizno_clean'].unique())}개사"</span>)
+
+unmatched_gir = gir[~gir[<span class="string">'bizno_clean'</span>].<span class="fn">isin</span>(merged_direct[<span class="string">'bizno_clean'</span>])]
+
+<span class="comment"># ── 2단계: 기업명 fuzzy 매칭 (직접 매칭 실패 기업 대상) ──────────────</span>
+<span class="keyword">def</span> <span class="fn">fuzzy_match_company</span>(query, choices, threshold=<span class="num">85</span>):
+    result = process.<span class="fn">extractOne</span>(
+        query, choices,
+        scorer=fuzz.token_sort_ratio,
+        score_cutoff=threshold
+    )
+    <span class="keyword">return</span> result[<span class="num">0</span>] <span class="keyword">if</span> result <span class="keyword">else</span> <span class="keyword">None</span>
+
+dart_names = dart_fin[<span class="string">'corp_name'</span>].<span class="fn">unique</span>().<span class="fn">tolist</span>()
+
+fuzzy_results = []
+<span class="keyword">for</span> _, row <span class="keyword">in</span> unmatched_gir.<span class="fn">iterrows</span>():
+    match = <span class="fn">fuzzy_match_company</span>(row[<span class="string">'업체명'</span>], dart_names)
+    <span class="keyword">if</span> match:
+        score = fuzz.<span class="fn">token_sort_ratio</span>(row[<span class="string">'업체명'</span>], match)
+        fuzzy_results.<span class="fn">append</span>({
+            <span class="string">'gir_name'</span>: row[<span class="string">'업체명'</span>],
+            <span class="string">'dart_match'</span>: match,
+            <span class="string">'score'</span>: score,
+            <span class="string">'needs_review'</span>: score &lt; <span class="num">90</span>  <span class="comment"># 90 미만은 수동 검수 플래그</span>
+        })
+
+fuzzy_df = pd.<span class="fn">DataFrame</span>(fuzzy_results)
+<span class="comment"># 수동 검수 필요 목록 저장</span>
+fuzzy_df[fuzzy_df[<span class="string">'needs_review'</span>]].<span class="fn">to_csv</span>(<span class="string">'manual_review.csv'</span>, index=<span class="keyword">False</span>)
+print(<span class="string">f"수동 검수 필요: {fuzzy_df['needs_review'].sum()}건"</span>)</div>
+  </div>
+</div>
+
+<!-- ────────────── TIMELINE ────────────── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(251,191,36,0.15);color:var(--a4)">일정</span>
+  <span class="sec-title">5주 데이터 수집 실행 로드맵 (마감: 5월 18일)</span>
+</div>
+<div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:22px 26px;margin-bottom:24px">
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(79,156,249,0.3);border-color:var(--a1)"></div>
+      <div class="tl-week" style="color:var(--a1)">1주차 (4/14–4/20) — 가장 쉬운 것 먼저</div>
+      <div class="tl-content">
+        <strong>Day 1:</strong> 공공데이터포털 접속 → GIR 명세서 5개년 CSV 다운로드 (15분). SHA-256 해시 저장.<br>
+        <strong>Day 2:</strong> GIR 할당대상업체 주소 다운로드 + Kakao API 키 발급 + 지오코딩 시작.<br>
+        <strong>Day 3–4:</strong> DART API 키 발급 + corp_code 전체 목록 다운로드 + 코스피200 목록 수집.<br>
+        <strong>Day 5:</strong> GIR + DART 사업자번호 직접 매칭. 1차 분석 대상 기업 목록 확정.<br>
+        <strong>산출물:</strong> 분석 대상 후보 기업 목록 (GIR + DART 직접 매칭 완료)
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(251,191,36,0.3);border-color:var(--a4)"></div>
+      <div class="tl-week" style="color:var(--a4)">2주차 (4/21–4/27) — ESG PDF (가장 오래 걸리는 것)</div>
+      <div class="tl-content">
+        <strong>Day 1:</strong> KRX ESG 포털 보고서 목록 Selenium 크롤링. 1주차 기업 목록 기준 PDF 링크 수집.<br>
+        <strong>Day 2–3:</strong> PDF 전체 다운로드 (약 80개사 × 5년 = 최대 400개 파일).<br>
+        <strong>Day 4–5:</strong> pdfplumber 자동 파싱 실행 → 신뢰도 HIGH/MEDIUM/LOW 자동 분류 → LOW 케이스 수동 입력 시작.<br>
+        <strong>병행:</strong> KRX 참고정보 조회에서 GRI 305-1 직접 확인 가능한 기업 먼저 처리.<br>
+        <strong>산출물:</strong> ESG Scope 1 데이터베이스 (파싱 신뢰도 포함)
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(167,139,250,0.3);border-color:var(--a3)"></div>
+      <div class="tl-week" style="color:var(--a3)">3주차 (4/28–5/4) — 위성 + ERA5 + DART 재무</div>
+      <div class="tl-content">
+        <strong>Day 1:</strong> GEE 계정 인증 + Python API 설정 + 테스트 사업장 1개 NO₂·SO₂ 추출 테스트.<br>
+        <strong>Day 2–3:</strong> 전체 사업장 NO₂·SO₂ 월별 추출 (GEE Export 방식 권장 — Drive에 CSV 자동 저장).<br>
+        <strong>Day 4:</strong> ERA5 기상변수 동일 사업장 추출.<br>
+        <strong>Day 5:</strong> DART API 연도별 재무 수집 (매출·자산·업종코드).<br>
+        <strong>산출물:</strong> 위성 시계열 + ERA5 기상 + DART 재무 데이터
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(34,211,153,0.3);border-color:var(--a2)"></div>
+      <div class="tl-week" style="color:var(--a2)">4주차 (5/5–5/11) — 통합 전처리 + 분석 시작</div>
+      <div class="tl-content">
+        <strong>Day 1–2:</strong> Fuzzy matching 2단계 + 수동 검수 완료. Gold/Silver/Bronze 샘플 확정.<br>
+        <strong>Day 3:</strong> ERA5 기상 보정 회귀 → 기상보정 NO₂·SO₂ 잔차 계산.<br>
+        <strong>Day 4:</strong> 괴리 지표 산출 + 기술 통계.<br>
+        <strong>Day 5:</strong> Isolation Forest + LOF + Mann-Kendall 이상탐지 실행.<br>
+        <strong>산출물:</strong> 분석 데이터셋 완성 + 초기 이상탐지 결과
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(249,115,22,0.3);border-color:var(--a6)"></div>
+      <div class="tl-week" style="color:var(--a6)">5주차 (5/12–5/17) — 회귀·XAI·보고서 마감</div>
+      <div class="tl-content">
+        <strong>Day 1:</strong> Heckman 2단계 + FE 패널 회귀 + 강건성 검정 3종.<br>
+        <strong>Day 2:</strong> SHAP 분석 + 정책 우선순위 매트릭스 작성.<br>
+        <strong>Day 3–4:</strong> 시각화 전체 완성 (히트맵·scatter·시계열·waterfall).<br>
+        <strong>Day 5:</strong> 보고서 최종 편집 + 제출 (마감 5/18).<br>
+        <strong>산출물:</strong> 제출용 분석 보고서 완성
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FINAL CHECKLIST ── -->
+<div class="sec-head">
+  <span class="sec-num" style="background:rgba(52,211,153,0.15);color:var(--a2)">체크</span>
+  <span class="sec-title">데이터 수집 완료 체크리스트</span>
+</div>
+<div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:20px 22px">
+  <div class="checklist-item" style="background:rgba(79,156,249,0.06)">
+    <div class="check-icon" style="background:rgba(79,156,249,0.15);color:var(--a1)">A</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">GIR 명세서 CSV 5개년</strong> — data.go.kr 무료 다운로드. SHA-256 해시 저장. 컬럼명 확인 후 Scope 1만 추출. 사업자번호 표준화.</div>
+  </div>
+  <div class="checklist-item" style="background:rgba(79,156,249,0.06)">
+    <div class="check-icon" style="background:rgba(79,156,249,0.15);color:var(--a1)">A2</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">GIR 할당대상업체 주소</strong> — data.go.kr 다운로드. Kakao API 지오코딩. 실패 케이스 수동 처리.</div>
+  </div>
+  <div class="checklist-item" style="background:rgba(251,191,36,0.06)">
+    <div class="check-icon" style="background:rgba(251,191,36,0.15);color:var(--a4)">B</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">ESG 보고서 Scope 1</strong> — KRX 참고정보 우선 → PDF 파싱 보완. 신뢰도 플래그. 조직경계·검증여부 추출. 단위 통일.</div>
+  </div>
+  <div class="checklist-item" style="background:rgba(167,139,250,0.06)">
+    <div class="check-icon" style="background:rgba(167,139,250,0.15);color:var(--a3)">C</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">Sentinel-5P NO₂·SO₂</strong> — GEE Export로 Drive 저장. qa_value ≥ 0.75 필터. 월별 컴포짓 → 연간 평균.</div>
+  </div>
+  <div class="checklist-item" style="background:rgba(34,211,153,0.06)">
+    <div class="check-icon" style="background:rgba(34,211,153,0.15);color:var(--a2)">D</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">ERA5 기상변수</strong> — GEE ECMWF/ERA5_LAND/HOURLY. u10·v10·tp·t2m·blh 5개 변수. 동일 버퍼·기간.</div>
+  </div>
+  <div class="checklist-item" style="background:rgba(249,115,22,0.06)">
+    <div class="check-icon" style="background:rgba(249,115,22,0.15);color:var(--a6)">E</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">DART 재무 + 기업정보</strong> — opendartreader 라이브러리. 매출액·자산총계·업종코드. 사업자번호(bizr_no) GIR 직접 매칭 키.</div>
+  </div>
+  <div class="checklist-item" style="background:rgba(236,72,153,0.06)">
+    <div class="check-icon" style="background:rgba(236,72,153,0.15);color:var(--a7)">M</div>
+    <div style="font-size:12.5px;color:var(--ink2)"><strong style="color:var(--ink)">기업 통합 매칭 완료</strong> — 사업자번호 직접 → fuzzy(85) → 수동 검수. Gold/Silver/Bronze 3계층 분류 확정. 최종 기업 목록 확정.</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

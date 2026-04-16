@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방법론 전문가 원탁회의</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #1f2937;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --text: #e6edf3; --muted: #8b949e; --dim: #484f58;
+  --c1: #3b82f6; /* 환경부/KEITI - 정책 */
+  --c2: #22c55e; /* 기후학자 */
+  --c3: #6366f1; /* SCI교수 */
+  --c4: #a855f7; /* 리뷰어 */
+  --c5: #14b8a6; /* 환경학자 */
+  --c6: #f97316; /* 기후모델링 */
+  --c7: #eab308; /* 알고리즘 */
+  --c8: #94a3b8; /* 소프트웨어 */
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 14px; font-weight: 300; }
+.page { max-width: 860px; margin: 0 auto; padding: 40px 28px 80px; }
+
+/* HEADER */
+.header { border: 1px solid var(--border2); border-radius: 12px; padding: 28px; margin-bottom: 32px; background: var(--bg2); position: relative; overflow: hidden; }
+.header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5), var(--c6), var(--c7)); }
+.header-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.header-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.header-sub { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+/* SECTION */
+.sec { margin-bottom: 28px; }
+.sec-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sec-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; background: var(--bg3); color: var(--muted); }
+.sec-title { font-size: 14px; font-weight: 700; }
+
+/* EXPERT ROSTER */
+.roster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
+.expert-card { border-radius: 8px; padding: 10px 12px; border: 1px solid; }
+.expert-card .e-name { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.expert-card .e-role { font-size: 10.5px; line-height: 1.4; }
+
+/* SPEECH BUBBLES */
+.turn { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+.turn.mod { flex-direction: row; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 2px; }
+.bubble { flex: 1; border-radius: 10px; padding: 13px 16px; font-size: 12.5px; line-height: 1.75; border: 1px solid; }
+.bubble .b-name { font-size: 10.5px; font-weight: 700; margin-bottom: 5px; letter-spacing: 0.03em; text-transform: uppercase; }
+.bubble strong { font-weight: 700; }
+.bubble .b-critical { margin-top: 8px; padding: 8px 10px; border-radius: 6px; font-size: 12px; }
+
+/* DEBATE BLOCK */
+.debate-title { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 7px 14px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.debate-block { border: 1px solid var(--border2); border-radius: 10px; padding: 18px; margin-bottom: 14px; background: var(--bg2); }
+.db-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.debate-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.debate-row .av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; margin-top: 1px; }
+.debate-row .sp { flex: 1; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.debate-row .sp strong { color: var(--text); font-weight: 700; }
+.reply { border-left: 2px solid; margin-left: 38px; padding-left: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.reply strong { color: var(--text); font-weight: 700; }
+
+/* OUTCOME TABLE */
+.outcome-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.oc-card { border-radius: 10px; padding: 16px; border: 1px solid; }
+.oc-head { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.oc-item { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start; }
+.oc-icon { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; margin-top: 1px; }
+.oc-text { font-size: 12px; line-height: 1.6; color: var(--muted); }
+.oc-text strong { color: var(--text); font-weight: 700; }
+
+/* REFINED PIPELINE */
+.pipe-item { display: grid; grid-template-columns: 44px 1fr; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+.pipe-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.pipe-body { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; }
+.pipe-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.pipe-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.pipe-add { margin-top: 7px; font-size: 11px; padding: 5px 9px; border-radius: 5px; display: inline-flex; align-items: center; gap: 4px; }
+
+/* COLOR CLASSES */
+.c1 { color: var(--c1); } .bg1 { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.25); }
+.c2 { color: var(--c2); } .bg2c { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.25); }
+.c3 { color: var(--c3); } .bg3c { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.25); }
+.c4 { color: var(--c4); } .bg4 { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.25); }
+.c5 { color: var(--c5); } .bg5 { background: rgba(20,184,166,0.1); border-color: rgba(20,184,166,0.25); }
+.c6 { color: var(--c6); } .bg6 { background: rgba(249,115,22,0.1); border-color: rgba(249,115,22,0.25); }
+.c7 { color: var(--c7); } .bg7 { background: rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.25); }
+.c8 { color: var(--c8); } .bg8 { background: rgba(148,163,184,0.1); border-color: rgba(148,163,184,0.25); }
+.deleted { text-decoration: line-through; opacity: 0.5; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.tag-new { background: rgba(34,197,94,0.12); color: var(--c2); border: 1px solid rgba(34,197,94,0.25); font-size: 9.5px; font-weight: 700; padding: 1px 7px; border-radius: 3px; vertical-align: middle; margin-left: 6px; }
+.tag-mod { background: rgba(234,179,8,0.12); color: var(--c7); border: 1px solid rgba(234,179,8,0.25); font-size: 9.5px; font-weight: 700; padding: 1px 7px; border-radius: 3px; vertical-align: middle; margin-left: 6px; }
+.tag-ok { background: rgba(148,163,184,0.1); color: var(--c8); border: 1px solid rgba(148,163,184,0.2); font-size: 9.5px; font-weight: 700; padding: 1px 7px; border-radius: 3px; vertical-align: middle; margin-left: 6px; }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+@media (max-width: 600px) { .roster { grid-template-columns: 1fr 1fr; } .outcome-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">방법론 전문가 원탁회의 · 2026 AX 공모전 데이터 분석 자유분석 부문</div>
+  <div class="header-title">8인 전문가 패널의 방법론 집중 토론 및 최종 설계 고도화</div>
+  <div class="header-sub">환경부·KEITI 정책관, 기후학자, SCI 교수, 논문 리뷰어, 환경학자, 기후모델링학자, 알고리즘학자, 소프트웨어 교수 — 각자 전문 관점에서 현재 방법론의 결함을 지적하고 개선안을 도출한 결과.</div>
+</div>
+
+<!-- ROSTER -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-num">PANEL</span><span class="sec-title">참석 전문가 8인</span></div>
+  <div class="roster">
+    <div class="expert-card bg1">
+      <div class="e-name c1">이주현 사무관</div>
+      <div class="e-role" style="color:var(--muted)">환경부 / KEITI 기후정책관<br>GIR 운영 실무 책임자</div>
+    </div>
+    <div class="expert-card bg2c">
+      <div class="e-name c2">박성진 교수</div>
+      <div class="e-role" style="color:var(--muted)">서울대 대기과학과<br>대기화학 · NO₂ 전문</div>
+    </div>
+    <div class="expert-card bg3c">
+      <div class="e-name c3">김태욱 교수</div>
+      <div class="e-role" style="color:var(--muted)">KAIST 환경공학부<br>SCI 최다 게재 · 패널분석</div>
+    </div>
+    <div class="expert-card bg4">
+      <div class="e-name c4">심명원 박사</div>
+      <div class="e-role" style="color:var(--muted)">Nature Climate Change 에디터<br>국제 논문 리뷰어</div>
+    </div>
+    <div class="expert-card bg5">
+      <div class="e-name c5">최해린 교수</div>
+      <div class="e-role" style="color:var(--muted)">연세대 환경학부<br>GHG 산정방법론 전문</div>
+    </div>
+    <div class="expert-card bg6">
+      <div class="e-name c6">이정훈 교수</div>
+      <div class="e-role" style="color:var(--muted)">POSTECH 대기환경학<br>WRF-Chem · 대기수송 전문</div>
+    </div>
+    <div class="expert-card bg7">
+      <div class="e-name c7">장민준 교수</div>
+      <div class="e-role" style="color:var(--muted)">서강대 컴퓨터공학부<br>이상탐지 · 시계열 ML 전문</div>
+    </div>
+    <div class="expert-card bg8">
+      <div class="e-name c8">윤서영 교수</div>
+      <div class="e-role" style="color:var(--muted)">UNIST 소프트웨어학부<br>데이터 파이프라인 · 재현성</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROUND 1 -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-num">R1</span><span class="sec-title">초기 비판 라운드 — 각자 가장 큰 문제 하나씩</span></div>
+
+  <!-- 이주현 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(59,130,246,0.15);color:var(--c1)">이</div>
+    <div class="bubble bg1">
+      <div class="b-name c1">이주현 (환경부/KEITI)</div>
+      GIR 데이터에 대해 실무자로서 꼭 짚어야 할 게 있습니다. 공공데이터포털의 명세서 데이터는 <strong>목표관리제 대상 기업과 배출권거래제 대상 기업이 혼재</strong>되어 있어요. 두 제도의 산정 방법론이 다릅니다. 배출권거래제는 모니터링 계획서에 따라 배출계수를 자체 측정하는 반면, 목표관리제는 고시 배출계수를 쓰기도 합니다. 같은 "GIR 실제 배출량"이라고 해도 산정 방법이 달라요. 이걸 하나의 "진짜 숫자"로 취급하는 게 지금 설계의 가장 큰 구멍입니다.
+      <div class="b-critical" style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2)">
+        <strong>실무 추가 정보:</strong> GIR 명세서에는 산정방법론 코드가 있습니다. T1(기본계수), T2(국가특정계수), T3(시설특정계수)로 Tier가 구분됩니다. Tier가 다른 기업끼리 절대값을 비교하면 안 됩니다. 반드시 동일 Tier 기업만 비교 군으로 설정하거나, Tier를 통제변수로 넣어야 합니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 박성진 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(34,197,94,0.12);color:var(--c2)">박</div>
+    <div class="bubble bg2c">
+      <div class="b-name c2">박성진 (기후학자, 대기화학)</div>
+      대기과학 관점에서 이 연구의 치명적 약점을 말씀드립니다. <strong>기상 변동이 TROPOMI NO₂ 측정값에 미치는 영향이 연도별 배출량 변화보다 훨씬 클 수 있습니다.</strong> 최근 연구(ACP, 2025)에서 기상 변동성만으로 연도 간 NO₂ 컬럼 차이가 최대 15%까지 발생합니다. 강수량은 NO₂와 R=0.6~0.8로 연관됩니다. 즉, 어떤 해에 비가 많이 왔으면 NO₂가 낮고, 가뭄이면 높게 나옵니다. 이 효과를 제거하지 않으면 위성 신호의 "방향 일관성 분석"이 기상 패턴을 보는 게지, 배출 활동을 보는 게 아닙니다.
+      <div class="b-critical" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2)">
+        <strong>해결 방향:</strong> ERA5 기상 재분석 데이터(ECMWF 제공, GEE에서 직접 접근 가능)로 풍속·강수·기온 효과를 회귀 잔차로 제거한 뒤 보정 NO₂ 시계열을 만들어야 합니다. 이게 없으면 위성 분석 전체가 흔들립니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 이정훈 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(249,115,22,0.12);color:var(--c6)">이</div>
+    <div class="bubble bg6">
+      <div class="b-name c6">이정훈 (기후모델링, 대기수송)</div>
+      박 교수님이 지적하신 것에 더해, <strong>10km 고정 버퍼는 방법론적으로 정당화가 어렵습니다.</strong> NO₂ 플룸은 풍향과 풍속에 따라 비대칭적으로 퍼집니다. 서해안 공단처럼 편서풍이 강한 지역은 플룸이 동쪽으로 수십 킬로미터 이동해요. 반경 10km 원은 실제 배출원 신호의 절반도 못 잡거나, 반대로 이웃 공단의 신호를 대거 포함합니다. 게다가 한국 공단은 밀집도가 세계 최고 수준입니다. 울산 공업단지는 반경 5km 안에 수십 개 대형 사업장이 있어요.
+      <div class="b-critical" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2)">
+        <strong>현실적 대안:</strong> HYSPLIT 대기역궤적은 너무 복잡하니, ERA5 풍향 데이터를 활용한 <strong>풍향 가중 비대칭 버퍼</strong> 또는 Fioletov et al.(2025, ACP)의 배경-도시-산업 성분 분리 통계 모델. 최소한 사업장 간 최소 거리 5km 이상인 "독립 입지 기업"만 위성 분석에 포함하는 샘플 분리 전략이 필요합니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 최해린 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(20,184,166,0.12);color:var(--c5)">최</div>
+    <div class="bubble bg5">
+      <div class="b-name c5">최해린 (환경학자, GHG 산정방법론)</div>
+      조직 경계 문제를 더 깊이 봐야 합니다. 현재 설계는 "Scope 1만 비교하면 조직 경계 문제가 해결된다"고 가정하는데, <strong>이건 틀렸습니다.</strong> GIR은 국내 사업장 단위 신고이고, ESG 보고서의 Scope 1은 GHG Protocol의 통제 접근법(control approach) 또는 지분 접근법(equity share approach)을 기업이 선택하는 구조입니다. 예를 들어 한화가 해외 합작 공장을 지분 51%로 갖고 있으면, 통제 접근법 쓰면 100% 포함, 지분 접근법 쓰면 51%만 포함됩니다. 이 차이가 수십만 tCO₂에 달할 수 있습니다. 더 중요한 건, <strong>GIR에는 국내 사업장만 있고 ESG에는 해외도 포함될 수 있다는 점</strong>입니다.
+      <div class="b-critical" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2)">
+        <strong>해결책:</strong> ESG 보고서에서 국내 Scope 1과 해외 Scope 1을 분리 기재한 기업만 1차 분석 대상으로 삼거나, 조직 경계 접근법(통제/지분)을 통제변수로 명시적으로 포함. "국내 사업장 매출 비중"이 90% 이상인 기업을 별도 분석 군으로 우선 분석하는 stratification 전략 필요.
+      </div>
+    </div>
+  </div>
+
+  <!-- 김태욱 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(99,102,241,0.12);color:var(--c3)">김</div>
+    <div class="bubble bg3c">
+      <div class="b-name c3">김태욱 (SCI 교수, 패널분석)</div>
+      통계 설계에서 두 가지를 짚겠습니다. 첫째, <strong>샘플 60-80개, 5개년 패널은 절대적으로 부족합니다.</strong> 고정효과 패널 회귀에서 업종 더미(에너지·철강·화학·기타 4개) + 연도 더미(5개) + 기업 고정효과를 전부 소화하면 자유도가 거의 없어요. 유의한 결과가 안 나올 가능성이 높습니다. 둘째, <strong>샘플 선택 편향(selection bias)</strong>. ESG 보고서를 자발적으로 내는 기업은 이미 특성이 다릅니다. 보고서를 안 내는 기업이 더 심각한 그룹인데 그게 분석에서 완전히 빠집니다. 이 편향을 통제하지 않으면 결과를 일반화할 수 없습니다.
+      <div class="b-critical" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2)">
+        <strong>해결책:</strong> ① Bootstrap CI로 소샘플 불확실성 정량화 ② Heckman 2단계 선택 모형 — 1단계: ESG 보고서 발간 확률 probit, 역밀스 비율(IMR) 계산 → 2단계 회귀에 IMR 포함. 이것만 해도 "selection bias 통제했다"는 방법론적 신뢰도가 크게 올라갑니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 심명원 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(168,85,247,0.12);color:var(--c4)">심</div>
+    <div class="bubble bg4">
+      <div class="b-name c4">심명원 (논문 리뷰어, Nature Climate Change)</div>
+      리뷰어 관점에서 가장 먼저 거절 사유가 될 부분을 말씀드립니다. <strong>인과 주장 없다고 했지만, 분석 언어가 인과 함의를 갖고 있습니다.</strong> "그린워싱 의심 기업", "고위험 공시 불일치 기업"이라는 표현 자체가 의도적 과소 신고를 암시합니다. 기술적 분석이라고 프레이밍했지만 리뷰어는 이걸 인과 주장으로 읽을 겁니다. 이런 논문은 첫 번째 리뷰에서 "methodologically claims to be descriptive but the conclusions imply causality"로 리젝됩니다. 두 번째 문제: <strong>패턴 분류 기준이 자의적</strong>입니다. "방향이 같으면 일관"이라고 했는데, 통계적 유의성 없는 미세한 증감도 방향으로 판단하면 노이즈를 패턴으로 취급하는 겁니다.
+      <div class="b-critical" style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2)">
+        <strong>해결책:</strong> ① 모든 언어를 "공시 불일치(disclosure discrepancy)"로 중립화. "그린워싱"은 연구에서 주장 불가, 정책 함의 섹션에서만 조건부 가능성으로 언급. ② 패턴 분류에 통계적 기준 도입: 연도별 변화율이 ±5% 이상이고 p<0.1인 경우만 유의한 방향 변화로 판정. Mann-Kendall 추세 검정 사용.
+      </div>
+    </div>
+  </div>
+
+  <!-- 장민준 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(234,179,8,0.12);color:var(--c7)">장</div>
+    <div class="bubble bg7">
+      <div class="b-name c7">장민준 (알고리즘학자, 이상탐지)</div>
+      ML 설계에서 세 가지 문제입니다. 첫째, <strong>Isolation Forest의 contamination=0.1은 완전히 자의적</strong>입니다. 실제 그린워싱 기업 비율을 10%로 가정한 근거가 없어요. 이 숫자가 바뀌면 결과가 완전히 달라집니다. 둘째, <strong>Isolation Forest와 LOF는 i.i.d 가정</strong>합니다. 패널 데이터는 시간 의존성이 있는데 이걸 무시하면 5개년을 5개 독립 관측으로 취급하는 겁니다. 한 기업의 2020년 괴리율이 2019년 괴리율과 독립이 아닌데요. 셋째, <strong>SHAP은 tree/kernel SHAP을 선택해야 하는데</strong> Isolation Forest에 tree SHAP 적용 시 path-dependent 편향이 발생할 수 있습니다.
+      <div class="b-critical" style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2)">
+        <strong>해결책:</strong> ① contamination sensitivity analysis: 0.05, 0.10, 0.15, 0.20 네 값으로 실험 후 결과 안정성 보고 ② 시계열 구조를 살리는 이상탐지 추가: <strong>LSTM Autoencoder</strong> — 기업별 5개년 시계열을 학습해 재구성 오차가 큰 기업을 이상으로 탐지. 기존 Isolation Forest+LOF와 앙상블. ③ SHAP 대신 permutation importance로 전환하거나, SHAP 사용 시 TreeExplainer의 feature_perturbation='interventional' 옵션 명시.
+      </div>
+    </div>
+  </div>
+
+  <!-- 윤서영 -->
+  <div class="turn">
+    <div class="avatar" style="background:rgba(148,163,184,0.12);color:var(--c8)">윤</div>
+    <div class="bubble bg8">
+      <div class="b-name c8">윤서영 (소프트웨어 교수, 데이터 파이프라인)</div>
+      재현성(reproducibility) 관점에서 지금 설계는 심각한 문제가 있습니다. <strong>PDF 파싱은 오차를 정량화할 방법이 없습니다.</strong> 기업마다 표 레이아웃이 다르고, pdfplumber는 멀티컬럼 표나 이미지 임베디드 텍스트에서 무결하게 실패합니다. 공모전 심사에서 "이 숫자는 어디서 왔나요?"라는 질문에 "PDF 파싱했습니다"는 재현 불가 답변입니다. 두 번째는 <strong>GEE API 할당량 문제</strong>. 사업장 80개 × 5개년 × 일별 추출은 GEE 무료 계정에서 할당량 초과합니다. 세 번째, <strong>데이터 버전 관리</strong>. GIR 공공데이터가 업데이트되면 재현이 안 됩니다.
+      <div class="b-critical" style="background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.2)">
+        <strong>해결책:</strong> ① PDF 파싱: 자동 파싱 후 전체 수동 검수 체크리스트 + 불확실 케이스 수동 기입 → 파싱 신뢰도 점수 컬럼 추가 ② GEE: 일별이 아닌 월별 컴포짓 집계로 쿼리 수 80% 감소 ③ 데이터 스냅샷: 수집 날짜와 파일 SHA-256 해시값을 메타데이터로 보관. 이 세 가지면 재현성 비판 방어 가능.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ROUND 2: CROSS-DEBATE -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-num">R2</span><span class="sec-title">교차 논쟁 — 4개 핵심 쟁점</span></div>
+
+  <!-- 논쟁 1 -->
+  <div class="debate-block">
+    <div class="db-title">
+      <span style="background:rgba(249,115,22,0.15);color:var(--c6);padding:2px 8px;border-radius:4px;font-size:10px">쟁점 1</span>
+      <strong>기상 보정 없이 위성 분석이 성립하는가?</strong>
+    </div>
+
+    <div class="debate-row">
+      <div class="av" style="background:rgba(249,115,22,0.12);color:var(--c6)">이</div>
+      <div class="sp"><strong>이정훈:</strong> 기상 보정 없는 연도별 NO₂ 추세는 아무 의미가 없습니다. 2022년 한국에 유독 강수량이 많았으면 그 해 전체 기업의 NO₂가 낮게 나와서 모두 "배출 감소"로 분류되는 오류가 생겨요.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(34,197,94,0.12);color:var(--c2)">박</div>
+      <div class="sp"><strong>박성진:</strong> 동의합니다. ERA5 reanalysis 데이터는 GEE에서 ECMWF/ERA5_LAND/HOURLY 컬렉션으로 바로 접근 가능합니다. 사업장 주변 10km 내 월별 평균 풍속·강수·기온으로 NO₂를 선형 회귀해서 잔차를 "기상보정 NO₂"로 쓰면 됩니다. 이건 표준 방법론이고 ACP 논문에서 반복 검증된 절차입니다.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(234,179,8,0.12);color:var(--c7)">장</div>
+      <div class="sp"><strong>장민준:</strong> 기상 보정에 추가로, ERA5 제공 경계층 높이(boundary layer height, BLH)도 넣어야 합니다. BLH가 낮으면 대기 혼합이 안 돼서 같은 배출량이어도 NO₂ 컬럼이 높게 나옵니다. BLH도 통제 안 하면 계절 보정이 불완전합니다.</div>
+    </div>
+    <div class="reply" style="border-color:var(--c2)">
+      <strong class="c2">합의:</strong> GEE에서 ERA5 월별 풍속(u10, v10), 강수량(tp), 지표기온(t2m), 경계층 높이(blh)를 사업장 버퍼 내 추출 → NO₂에 대한 다중 회귀 잔차 = "기상보정 NO₂". 이 잔차값으로 연도별 추세 비교. <strong>기상 보정 없는 Raw NO₂는 sensitivity 분석에서만 보조 비교용으로 보고.</strong>
+    </div>
+  </div>
+
+  <!-- 논쟁 2 -->
+  <div class="debate-block">
+    <div class="db-title">
+      <span style="background:rgba(20,184,166,0.15);color:var(--c5);padding:2px 8px;border-radius:4px;font-size:10px">쟁점 2</span>
+      <strong>조직 경계 불일치를 어떻게 정량화하는가?</strong>
+    </div>
+
+    <div class="debate-row">
+      <div class="av" style="background:rgba(20,184,166,0.12);color:var(--c5)">최</div>
+      <div class="sp"><strong>최해린:</strong> 제가 직접 한국 대기업 ESG 보고서 100개를 분석해본 결과, 국내 전용 Scope 1을 별도 기재하는 기업은 전체의 약 40% 미만입니다. 나머지는 연결 전체 수치만 있어요. 이 문제를 해결 못 하면 비교 자체가 성립 안 합니다.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(99,102,241,0.12);color:var(--c3)">김</div>
+      <div class="sp"><strong>김태욱:</strong> 그럼 샘플을 더 엄격하게 제한해야 합니다. 국내 매출 비중 90% 이상 기업, 또는 ESG 보고서에서 국내/해외 Scope 1을 명시적으로 분리한 기업만 메인 분석에 넣고, 나머지는 별도 robustness check 군으로 처리하면 됩니다.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(59,130,246,0.12);color:var(--c1)">이</div>
+      <div class="sp"><strong>이주현 (환경부):</strong> 실무적으로 한 가지 추가합니다. DART 공시 중 "사업보고서"의 환경정보 항목에는 GIR 사업장 코드가 일부 연계되어 있습니다. 이걸 활용하면 ESG 보고서와 GIR의 사업장 경계를 더 정확히 매칭할 수 있습니다. 특히 단일 사업장 위주 기업은 1:1 매칭이 가능합니다.</div>
+    </div>
+    <div class="reply" style="border-color:var(--c5)">
+      <strong class="c5">합의:</strong> <strong>3계층 샘플 전략</strong> — ① 황금 샘플(Gold): 국내 매출 90%↑ + 국내/해외 Scope 1 분리 기재 + GIR 코드 연계. 메인 분석 대상. ② 은 샘플(Silver): 국내 매출 70~90% + Scope 1 분리 미기재. 보정계수(해외매출비율 × 업종 평균 배출집약도) 적용 후 분석. ③ 동 샘플(Bronze): 나머지. 패턴 서술만, 통계 분석 제외.
+    </div>
+  </div>
+
+  <!-- 논쟁 3 -->
+  <div class="debate-block">
+    <div class="db-title">
+      <span style="background:rgba(234,179,8,0.15);color:var(--c7);padding:2px 8px;border-radius:4px;font-size:10px">쟁점 3</span>
+      <strong>ML 이상탐지: Isolation Forest만으로 충분한가?</strong>
+    </div>
+
+    <div class="debate-row">
+      <div class="av" style="background:rgba(234,179,8,0.12);color:var(--c7)">장</div>
+      <div class="sp"><strong>장민준:</strong> 핵심 문제는 Isolation Forest가 시간 구조를 무시한다는 겁니다. 기업 A가 2019~2023년 내내 일관되게 ESG를 10% 낮게 쓴다면, 각 연도 단면에서는 평범한 기업으로 보일 수 있어요. 하지만 시계열로 보면 시스템적 편향이 명확합니다. 이걸 잡으려면 <strong>시계열 이상탐지</strong>가 필요합니다.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(99,102,241,0.12);color:var(--c3)">김</div>
+      <div class="sp"><strong>김태욱:</strong> LSTM Autoencoder는 데이터 60~80개 기업으로는 과적합 위험이 있습니다. 더 현실적인 대안은 기업별 괴리율 시계열에 <strong>Mann-Kendall 추세 검정</strong>을 돌리는 겁니다. 이건 비모수 검정이라 정규성 가정이 없고, 5개 데이터 포인트에서도 쓸 수 있습니다. 심각도 분류 기준도 명확해집니다.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(234,179,8,0.12);color:var(--c7)">장</div>
+      <div class="sp"><strong>장민준:</strong> 그게 오히려 낫겠네요. 저는 LSTM을 주장했지만 샘플 크기 제약을 감안하면 Mann-Kendall이 더 방어 가능한 선택입니다. 그리고 contamination 문제도 Mann-Kendall은 해결됩니다. 기업별로 독립적으로 추세 유의성을 검정하니까요. contamination이라는 임의 파라미터 자체가 사라집니다.</div>
+    </div>
+    <div class="reply" style="border-color:var(--c7)">
+      <strong class="c7">합의:</strong> 이상탐지 3층 구조 — ① 단면 이상(Cross-sectional): Isolation Forest + LOF 앙상블, contamination sensitivity(0.05~0.20) ② 시계열 이상(Longitudinal): 기업별 Mann-Kendall 추세 검정 — 통계적으로 유의한 단조 증가/감소 추세가 있는 기업 식별 ③ 최종 분류: 두 레이어 모두 이상으로 판정 = "구조적 공시 불일치 기업", 하나만 = "주의 기업", 없음 = 정상. <strong>LSTM은 향후 연구로 제안</strong> (데이터 확장 시).
+    </div>
+  </div>
+
+  <!-- 논쟁 4 -->
+  <div class="debate-block">
+    <div class="db-title">
+      <span style="background:rgba(168,85,247,0.15);color:var(--c4);padding:2px 8px;border-radius:4px;font-size:10px">쟁점 4</span>
+      <strong>패턴 분류의 통계적 엄밀성</strong>
+    </div>
+
+    <div class="debate-row">
+      <div class="av" style="background:rgba(168,85,247,0.12);color:var(--c4)">심</div>
+      <div class="sp"><strong>심명원 (리뷰어):</strong> 방향이 올라가는지 내려가는지 단순 부호로 패턴을 분류하면, 2019→2020: +0.1%, 2020→2021: -0.1% 같은 잡음 수준 변화도 "이탈"로 분류됩니다. 이게 학술지에서 용납이 안 됩니다. <strong>방향 판정 자체에 통계적 임계값이 있어야 합니다.</strong></div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(99,102,241,0.12);color:var(--c3)">김</div>
+      <div class="sp"><strong>김태욱:</strong> 방금 합의한 Mann-Kendall이 이 문제도 해결합니다. Mann-Kendall은 전체 5개년 추세의 통계적 유의성을 검정하니까, 잡음 수준 변동은 유의하지 않게 나옵니다. 위성 데이터도 동일하게 Mann-Kendall로 추세 유의성을 판정하면 "방향 일관성"의 정의가 수학적으로 명확해집니다.</div>
+    </div>
+    <div class="debate-row">
+      <div class="av" style="background:rgba(34,197,94,0.12);color:var(--c2)">박</div>
+      <div class="sp"><strong>박성진:</strong> 위성 데이터의 Mann-Kendall은 기상보정 후 잔차에 적용해야 합니다. Raw 값에 하면 기상 추세(예: 2019-2023 강수 증가 트렌드)가 배출 추세로 오독됩니다.</div>
+    </div>
+    <div class="reply" style="border-color:var(--c4)">
+      <strong class="c4">합의:</strong> 패턴 분류 기준 재정의 — GIR, ESG, 기상보정 위성 세 시계열에 각각 Mann-Kendall 검정. τ(켄달 상관계수)와 p값 보고. <strong>패턴 A(일관)</strong>: 세 시계열 모두 같은 방향의 유의한 추세(p<0.1). <strong>패턴 B(ESG 이탈)</strong>: GIR과 위성 방향 일치, ESG만 반대. <strong>패턴 C(GIR 의심)</strong>: ESG와 위성 방향 일치, GIR만 반대. <strong>패턴 D(최심각)</strong>: 위성과 GIR·ESG 모두 방향 불일치. <strong>패턴 E(무추세)</strong>: 통계적 유의 추세 없음.
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ROUND 3: SYNTHESIS -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-num">R3</span><span class="sec-title">최종 합의 — 버린 것 · 수정한 것 · 추가한 것</span></div>
+  <div class="outcome-grid">
+    <div class="oc-card" style="border-color:rgba(248,81,73,0.25);background:rgba(248,81,73,0.04)">
+      <div class="oc-head" style="color:#f85149">폐기 / 대체</div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(248,81,73,0.15);color:#f85149">✕</div>
+        <div class="oc-text"><strong class="deleted">Raw NO₂ 연도별 직접 비교</strong><br>기상 보정 잔차로 완전 대체</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(248,81,73,0.15);color:#f85149">✕</div>
+        <div class="oc-text"><strong class="deleted">10km 고정 버퍼 전체 적용</strong><br>독립입지 기업 선별 + 풍향 가중 버퍼</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(248,81,73,0.15);color:#f85149">✕</div>
+        <div class="oc-text"><strong class="deleted">단순 방향 부호 패턴 분류</strong><br>Mann-Kendall 통계 검정으로 대체</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(248,81,73,0.15);color:#f85149">✕</div>
+        <div class="oc-text"><strong class="deleted">"그린워싱 의심" 언어</strong><br>"공시 불일치(disclosure discrepancy)"로 중립화</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(248,81,73,0.15);color:#f85149">✕</div>
+        <div class="oc-text"><strong class="deleted">contamination=0.1 단일 고정값</strong><br>0.05~0.20 sensitivity analysis로 대체</div>
+      </div>
+    </div>
+
+    <div class="oc-card" style="border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.04)">
+      <div class="oc-head" style="color:var(--c2)">신규 추가</div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(34,197,94,0.15);color:var(--c2)">+</div>
+        <div class="oc-text"><strong>ERA5 기상 보정</strong><br>풍속(u10,v10)·강수(tp)·기온(t2m)·경계층 높이(blh) — GEE에서 추출, 다중회귀 잔차화</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(34,197,94,0.15);color:var(--c2)">+</div>
+        <div class="oc-text"><strong>3계층 샘플 전략</strong><br>Gold/Silver/Bronze — 조직 경계 불확실성에 따른 분류, 층별 별도 분석</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(34,197,94,0.15);color:var(--c2)">+</div>
+        <div class="oc-text"><strong>Mann-Kendall 추세 검정</strong><br>3개 시계열(GIR·ESG·위성) 각각. contamination 의존 제거. 패턴 5종으로 재정의</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(34,197,94,0.15);color:var(--c2)">+</div>
+        <div class="oc-text"><strong>Heckman 2단계 선택 모형</strong><br>ESG 보고서 자발 발간 편향 통제. 역밀스 비율(IMR)을 회귀에 포함</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(34,197,94,0.15);color:var(--c2)">+</div>
+        <div class="oc-text"><strong>GIR Tier 통제변수</strong><br>T1/T2/T3 산정방법론 코드를 통제변수로 포함. 동일 Tier 내 비교 우선</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(34,197,94,0.15);color:var(--c2)">+</div>
+        <div class="oc-text"><strong>파싱 신뢰도 점수</strong><br>PDF 파싱 각 수치에 신뢰도 플래그(자동확인/수동확인/불확실). 불확실 케이스 제외 sensitivity</div>
+      </div>
+    </div>
+
+    <div class="oc-card" style="border-color:rgba(234,179,8,0.25);background:rgba(234,179,8,0.04)">
+      <div class="oc-head" style="color:var(--c7)">수정 / 강화</div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(234,179,8,0.15);color:var(--c7)">△</div>
+        <div class="oc-text"><strong>이상탐지: 3층 구조</strong><br>단면(IF+LOF) + 시계열(Mann-Kendall) + 최종 교차 판정. 구조적 vs 일시적 분리</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(234,179,8,0.15);color:var(--c7)">△</div>
+        <div class="oc-text"><strong>패널 회귀에 Heckman IMR 추가</strong><br>기존 FE 모형에 역밀스 비율 통제변수 추가. 선택편향 통제 명시</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(234,179,8,0.15);color:var(--c7)">△</div>
+        <div class="oc-text"><strong>위성 데이터: 월별 컴포짓</strong><br>일별 → 월별 집계로 GEE 할당량 문제 해결. 연간 평균 계산 시 계절 가중</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(234,179,8,0.15);color:var(--c7)">△</div>
+        <div class="oc-text"><strong>Bootstrap CI 추가</strong><br>소샘플 패널 회귀 불확실성 정량화. 95% CI 보고 의무화</div>
+      </div>
+    </div>
+
+    <div class="oc-card" style="border-color:rgba(148,163,184,0.25);background:rgba(148,163,184,0.04)">
+      <div class="oc-head" style="color:var(--c8)">검증 통과 (유지)</div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(148,163,184,0.12);color:var(--c8)">✓</div>
+        <div class="oc-text"><strong>3중 비교 프레임 (GIR·ESG·위성)</strong><br>핵심 구조 유효. 독립 제3 측정 포함 설계는 방법론적으로 강력.</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(148,163,184,0.12);color:var(--c8)">✓</div>
+        <div class="oc-text"><strong>방향 일관성 분석 (절대값 비교 회피)</strong><br>NO₂ ≠ CO₂ 한계 우회 전략 유효. Mann-Kendall로 엄밀성만 강화.</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(148,163,184,0.12);color:var(--c8)">✓</div>
+        <div class="oc-text"><strong>Scope 1 단독 비교</strong><br>최선의 현실적 접근법. Gold 샘플에서는 비교 가능성 확보.</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(148,163,184,0.12);color:var(--c8)">✓</div>
+        <div class="oc-text"><strong>NO₂ + SO₂ 이중 위성 proxy</strong><br>업종별 교차검증 전략 유효. 특히 철강·발전에서 SO₂ 신호 강력.</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(148,163,184,0.12);color:var(--c8)">✓</div>
+        <div class="oc-text"><strong>SHAP 기반 XAI</strong><br>feature_perturbation='interventional' 옵션 명시 조건 하에 유효.</div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-icon" style="background:rgba(148,163,184,0.12);color:var(--c8)">✓</div>
+        <div class="oc-text"><strong>정책 우선순위 매트릭스</strong><br>KEITI 활용 방안으로서 구조 타당. 패턴 분류 결과와 직접 연결.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FINAL REFINED PIPELINE -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-num">FINAL</span><span class="sec-title">토론 후 최종 방법론 파이프라인 — 완전 고도화판</span></div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(59,130,246,0.12);color:var(--c1)">01</div>
+    <div class="pipe-body">
+      <div class="pipe-title c1">데이터 수집 (기존 유지)</div>
+      <div class="pipe-desc">GIR 명세서 + A-2 주소 / KRX ESG PDF / GEE Sentinel-5P NO₂·SO₂ 월별 컴포짓 / DART 재무. 수집 날짜 + SHA-256 메타데이터 저장.</div>
+      <span class="pipe-add" style="background:rgba(234,179,8,0.1);color:var(--c7)">↑ 월별 컴포짓으로 변경 (GEE 할당량 최적화)</span>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(59,130,246,0.12);color:var(--c1)">02</div>
+    <div class="pipe-body">
+      <div class="pipe-title c1">전처리 — 기존 + 3가지 추가</div>
+      <div class="pipe-desc">① fuzzy matching + 사업자번호 직접 매칭(우선) ② GIR Tier(T1/T2/T3) 플래그 → 통제변수 추가 ③ 3계층 샘플 분류(Gold/Silver/Bronze) ④ PDF 파싱 신뢰도 점수 각 수치에 부여 ⑤ MICE 결측치 / IQR 이상값 처리 (기존 유지)</div>
+      <span class="pipe-add tag-new">GIR Tier 통제변수</span>
+      <span class="pipe-add tag-new">3계층 샘플 전략</span>
+      <span class="pipe-add tag-new">파싱 신뢰도 점수</span>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(34,197,94,0.12);color:var(--c2)">03</div>
+    <div class="pipe-body">
+      <div class="pipe-title c2">ERA5 기상 보정 <span class="tag-new">신규 단계</span></div>
+      <div class="pipe-desc">GEE ECMWF/ERA5_LAND에서 풍속(u10,v10), 강수(tp), 기온(t2m), 경계층 높이(blh) 사업장 버퍼 월별 추출. NO₂ ~ f(풍속, 강수, 기온, BLH, 월더미) 다중회귀 → 잔차 = "기상보정 NO₂(Δ_met)". SO₂도 동일 적용.</div>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(99,102,241,0.12);color:var(--c3)">04</div>
+    <div class="pipe-body">
+      <div class="pipe-title c3">괴리 지표 산출 (기존 유지 + Tier 통제)</div>
+      <div class="pipe-desc">괴리율(%) = (ESG − GIR) / GIR × 100. Gold 샘플 우선. GIR Tier를 통제변수로 포함. 절대·상대·방향 구분. 연도별·업종별.</div>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(234,179,8,0.12);color:var(--c7)">05</div>
+    <div class="pipe-body">
+      <div class="pipe-title c7">이상탐지 3층 구조 <span class="tag-mod">대폭 수정</span></div>
+      <div class="pipe-desc">
+        Layer 1 단면: Isolation Forest + LOF 앙상블. contamination sensitivity(0.05~0.20) 4종 실험.<br>
+        Layer 2 시계열: 기업별 괴리율 시계열에 Mann-Kendall 추세 검정(켄달 τ + p값).<br>
+        최종 분류: ① 구조적 불일치(L1+L2 모두 이상) ② 일시적 불일치(L1만) ③ 추세적 불일치(L2만) ④ 정상.
+      </div>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(249,115,22,0.12);color:var(--c6)">06</div>
+    <div class="pipe-body">
+      <div class="pipe-title c6">위성 3중 비교 (기상보정 + Mann-Kendall) <span class="tag-mod">수정</span></div>
+      <div class="pipe-desc">기상보정 NO₂(Δ_met)와 SO₂ 잔차 시계열에 Mann-Kendall 적용. GIR·ESG·위성 세 시계열의 추세 방향(τ 부호)과 통계 유의성(p<0.1) 기준으로 패턴 5종 분류(A~E). 독립입지 사업장 군(주변 5km 내 타 대형사업장 없음) 별도 분석으로 플룸 혼재 문제 최소화.</div>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(168,85,247,0.12);color:var(--c4)">07</div>
+    <div class="pipe-body">
+      <div class="pipe-title c4">패널 회귀 + Heckman 선택 모형 <span class="tag-new">Heckman 추가</span></div>
+      <div class="pipe-desc">
+        1단계(Heckman): ESG 보고서 발간 확률 probit → 역밀스 비율(IMR) 계산.<br>
+        2단계(FE 패널): 괴리율ᵢₜ = α + β₁(lnAsset) + β₂(검증여부) + β₃(조직경계) + β₄(Tier) + β₅(IMR) + β₆(연도더미) + β₇(업종더미) + μᵢ + εᵢₜ<br>
+        강건성 검정 3종 + Bootstrap 95% CI. Hausman 검정.
+      </div>
+    </div>
+  </div>
+
+  <div class="pipe-item">
+    <div class="pipe-num" style="background:rgba(148,163,184,0.12);color:var(--c8)">08</div>
+    <div class="pipe-body">
+      <div class="pipe-title c8">XAI — SHAP (옵션 명시) + 정책 제언 (기존 유지)</div>
+      <div class="pipe-desc">SHAP TreeExplainer(feature_perturbation='interventional'). 기업별 기여 변수 분해. 우선순위 매트릭스(불일치 심각도 × Tier × 업종 × 위성 패턴) → KEITI 직결 정책 제언 3종.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING STATEMENT -->
+<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:22px;margin-top:16px;">
+  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">원탁회의 총평</div>
+  <div style="font-size:13px;line-height:1.85;color:var(--muted)">
+    <span style="color:var(--c2);font-weight:700">기후학자·기후모델링학자</span>가 지적한 ERA5 기상 보정은 가장 큰 개선 사항으로 — 이 없이는 위성 분석 자체의 타당성이 논리적으로 공격받을 수 있었다.
+    <span style="color:var(--c5);font-weight:700">환경학자</span>의 3계층 샘플 전략은 조직 경계 불확실성을 분석에서 숨기는 것이 아니라 명시적으로 구조화함으로써 방어력을 높였다.
+    <span style="color:var(--c7);font-weight:700">알고리즘학자</span>가 제안한 Mann-Kendall은 contamination이라는 임의 파라미터를 제거하면서 시계열 구조도 살리는 결정적 대안이었다.
+    <span style="color:var(--c3);font-weight:700">SCI 교수</span>의 Heckman 선택 모형은 소샘플 편향을 방법론적으로 통제하는 도구로 채택됐다.
+    <span style="color:var(--c4);font-weight:700">리뷰어</span>의 언어 중립화 요구는 논문 수준의 엄밀성을 공모전에도 적용하는 기준이 됐다. 이 8가지 개선이 반영된 방법론은 <strong style="color:var(--text)">학술적 비판에도, 정책 심사에도, 실무 검토에도 방어 가능한 수준</strong>으로 고도화됐다.
+  </div>
+</div>
+
+</div>
+</body>
+</html>
