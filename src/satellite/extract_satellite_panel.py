@@ -34,34 +34,28 @@ if not PROJECT_ID:
 
 SLEEP_SEC = 0.3
 
+# S5P L3 OFFL products do NOT expose qa_value band (qa filtering is applied
+# upstream at L2->L3 compositing). All 4 species use no qa_band filter.
 S5P_COLLECTIONS = {
     "no2": {
         "id": "COPERNICUS/S5P/OFFL/L3_NO2",
         "band": "tropospheric_NO2_column_number_density",
-        "qa_band": "qa_value",
-        "qa_min": 0.75,
-        "scale": 1113,
+        "qa_band": None, "qa_min": None, "scale": 1113,
     },
     "so2": {
         "id": "COPERNICUS/S5P/OFFL/L3_SO2",
         "band": "SO2_column_number_density",
-        "qa_band": "qa_value",
-        "qa_min": 0.50,
-        "scale": 1113,
+        "qa_band": None, "qa_min": None, "scale": 1113,
     },
     "co": {
         "id": "COPERNICUS/S5P/OFFL/L3_CO",
         "band": "CO_column_number_density",
-        "qa_band": None,
-        "qa_min": None,
-        "scale": 1113,
+        "qa_band": None, "qa_min": None, "scale": 1113,
     },
     "hcho": {
         "id": "COPERNICUS/S5P/OFFL/L3_HCHO",
         "band": "tropospheric_HCHO_column_number_density",
-        "qa_band": None,
-        "qa_min": None,
-        "scale": 1113,
+        "qa_band": None, "qa_min": None, "scale": 1113,
     },
 }
 
@@ -75,12 +69,17 @@ ERA5_LAND_BANDS = {
 ERA5_ID = "ECMWF/ERA5/HOURLY"
 ERA5_BANDS = {"era5_blh": "boundary_layer_height"}
 
+# MERRA-2 SLV (instantaneous single-level) in GEE uses different band naming.
+# Key diagnostics available: QV10M (specific humidity 10m), QV2M, PBLTOP,
+# PS (surface pressure), DISPH (displacement height). Surface wind U/V and T2M
+# are NOT present in this subset — deferred to sensitivity analysis later.
+# Keep PBLTOP as independent PBL height check vs ERA5 BLH.
 MERRA2_ID = "NASA/GSFC/MERRA/slv/2"
 MERRA2_BANDS = {
-    "merra2_u10": "U10M",
-    "merra2_v10": "V10M",
-    "merra2_t2m": "T2M",
-    "merra2_pblh": "PBLH",
+    "merra2_pbltop": "PBLTOP",
+    "merra2_ps":     "PS",
+    "merra2_disph":  "DISPH",
+    "merra2_qv2m":   "QV2M",
 }
 
 
@@ -187,8 +186,6 @@ def extract_merra2(geom: ee.Geometry, start: str, end: str) -> dict:
         out = {"_error": str(e)[:200]}
     time.sleep(SLEEP_SEC)
     result = {k: out.get(v) for k, v in MERRA2_BANDS.items()}
-    u, v = result.get("merra2_u10"), result.get("merra2_v10")
-    result["merra2_ws10"] = (u**2 + v**2) ** 0.5 if (u is not None and v is not None) else None
     return result
 
 

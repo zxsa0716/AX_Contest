@@ -128,6 +128,7 @@ def monthly_aggregate(daily: pd.DataFrame) -> pd.DataFrame:
         return daily
     d = daily.copy()
     d["tm"] = pd.to_datetime(d["tm"])
+    d["stnId"] = pd.to_numeric(d["stnId"], errors="coerce").astype("Int64").astype(int)
     for c in ("avgTa", "avgWs", "sumRn", "maxWs", "avgRhm", "sumSsHr"):
         if c in d.columns:
             d[c] = pd.to_numeric(d[c], errors="coerce")
