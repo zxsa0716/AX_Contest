@@ -44,13 +44,42 @@
 - **기간**: 2019~2023 5개년 패널
 - **핵심 혁신**: ERA5 기상보정 + Mann-Kendall 방향 일관성 + Heckman 선택편향 통제 + 이상탐지 3층 구조 + SHAP XAI
 
-### 6개 데이터셋
-- **A**: GIR 관리업체 명세서 (data.go.kr, CSV 5개년, encoding=cp949)
-- **A-2**: GIR 할당대상업체 주소 → Kakao Local API 지오코딩
-- **B**: KRX ESG 포털 + DART 지속가능경영보고서 PDF (GRI 305-1 파싱)
-- **C**: Sentinel-5P NO₂ (GEE COPERNICUS/S5P/OFFL/L3_NO2)
-- **C-2**: Sentinel-5P SO₂ (GEE COPERNICUS/S5P/OFFL/L3_SO2)
-- **D**: DART Open API 재무 + ERA5 기상 (GEE ECMWF/ERA5_LAND/HOURLY)
+### 17+ 데이터셋 (ADR-002 확장, ADR-004 정정, 2026-04-22 기준)
+
+**Tier 1 — 법정·공공 배출량 (GIR ecosystem)**
+- **A**: GIR 관리업체 명세서 (xls 7개년 2018-2024, cp949, 7,998행 1,585개 법인)
+- **A-2**: GIR 할당대상업체 지정현황 (4개 snapshot, VWorld 지오코딩)
+- **A-3**: GIR 목표관리업체 현황 (xlsx, 4,308 entities)
+- **A-4**: K-ETS 사전할당 1~4차 phase (12,009 records)
+- **A-5**: K-ETS 할당계획 변경공고 (HWP/HWPX/PDF 18개, **업종·총량 수준만, 기업별 조정 0건** — ADR-004 참조)
+- **A-6**: GIR 검증기관 지정현황 + 명세서 내장 검증기관
+
+**Tier 1 — 기업 ESG 자체보고**
+- **B**: 지속가능경영보고서 PDF (DART 자율공시 + KRX ESG + IR 사이트)
+  - 자동화 수집: `src/preprocessing/sustainability_report_collector.py`
+  - 자동화 파싱: `src/preprocessing/sustainability_report_parser.py`
+  - Skill: `.claude/skills/sustainability-report-collect.md`, `esg-scope-extract.md`
+- **B-2**: DART 사업보고서 II.6 환경정보 + 지역별 매출
+
+**Tier 1 — 샘플 기준**
+- **C**: KOSPI 전체 789 firms (DART 기반) + KOSPI200 proxy (자본총계 top 200)
+  - 공식 KRX API 차단 → `src/preprocessing/kospi200_proxy.py` 우회
+- **C-2**: KCGS ESG 등급 (2017-2025 집계 + 분기 등급조정 21건)
+
+**Tier 1 — 위성·기상 (4중 비교)**
+- **D**: Sentinel-5P NO₂ (GEE COPERNICUS/S5P/OFFL/L3_NO2)
+- **D-2**: Sentinel-5P SO₂ (GEE L3_SO2)
+- **D-3**: Sentinel-5P CO (GEE L3_CO) — 장수명 불완전연소 추적자
+- **D-4**: Sentinel-5P HCHO (GEE L3_HCHO) — 석유화학 VOC 프록시
+- **E**: DART 재무제표 (opendartreader)
+- **E-2**: ERA5-Land + ERA5 BLH 기상 (GEE)
+- **E-3**: MERRA-2 재분석 (GEE, ERA5 민감도 검증)
+- **F**: ODIAC v2024 CO₂ 1km (NIES 포털) — **4중 비교 중 직접 CO₂ 신호**
+- **F-2**: NIR 국가 온실가스 인벤토리 (거시 sanity check)
+- **F-3**: 기상청 ASOS 지점 관측 (data.go.kr API, ERA5 지상 검증)
+
+**Tier 1 — 보조**
+- **G**: 통합환경허가 사업장 정보 (1,065건 중 782 파싱 성공)
 
 ### 심사 5대 기준
 1. 분석기법 타당성 (→ 6.1~6.4)
@@ -80,6 +109,27 @@
 
 ---
 
+## 자동화된 데이터 수집 시스템 (영구 기능, 최종 제출물 구성요소)
+
+Wave 3에서 구현된 자동화 파이프라인. 공모전 제출 시 "시스템 아키텍처"로 명시할 핵심 deliverable.
+
+### 지속가능경영보고서 수집·파싱 파이프라인
+- **수집**: `src/preprocessing/sustainability_report_collector.py` — DART 자율공시 → KRX ESG → IR 3-tier fallback, SHA-256 중복제거, resume-safe
+- **파싱**: `src/preprocessing/sustainability_report_parser.py` — GRI 305-1/2/3 + 조직경계 + assurance + 보고기준, 신뢰도 플래그(HIGH/MEDIUM/LOW)
+- **알려진 제약**: 한국 대기업(삼성·현대·SK·POSCO) 대부분 DART 자율공시에는 URL 링크만, 실제 PDF는 IR 사이트에 있음. KRX ESG 포털은 JS 렌더링 필수(Selenium 설정 별도).
+- **실용 전략**: DART URL 로그로 공시 존재 확인 + 수동 IR 사이트 다운로드 + 파서 즉시 처리
+
+### KOSPI200 Proxy (`src/preprocessing/kospi200_proxy.py`)
+- KRX 공식 API 2026년 차단 우회책
+- DART 자본총계 기준 상위 200개사 = 공식 KOSPI200과 90~95% 일치 추정
+- 방법론 caveat: 자본총계 ≠ 시가총액, 금융지주 편향 주의
+
+### Slash Skills (재사용 가능)
+- `/skill sustainability-report-collect <corp_list.csv>`
+- `/skill esg-scope-extract <reports-dir>`
+
+---
+
 ## 언어 정책
 
 - **사용자 ↔ 디렉터**: 한국어
@@ -99,3 +149,5 @@
 - **공공데이터 이용약관·저작권**을 위반하지 않는다 (재배포 금지 등).
 - **"그린워싱" 같은 인과 함의 언어 사용 금지.** "공시 불일치 (disclosure discrepancy)" 중립 용어만 사용.
 - **제3자 검증받지 않은 결론을 단정하지 않는다.** 항상 CI·p-value·robustness check 병기.
+- **KOSPI200 구성종목**: KRX 공식 API 2026년 차단. `kospi200_proxy.py`로 DART 자본총계 proxy 사용. `data/KOSPI200/` 5개 CSV는 인덱스 일별 시세(매크로 통제변수)이며 구성종목 명단 아님.
+- **KSSB 2028 임계값**: 연결자산 30조원 이상 = 49개사 (ADR-004 정정). `kssb_flag_30` 컬럼 사용. `kssb_flag_any`(2조 기준, 238개사)는 deprecated.
