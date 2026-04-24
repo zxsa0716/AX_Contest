@@ -77,7 +77,11 @@ def main() -> None:
     x2_cols += [c for c in stage2.columns if c.startswith("yr_")]
 
     stage2 = stage2.dropna(subset=x2_cols)
-    X2 = stage2[x2_cols].astype(float).values
+    # Remove zero-variance columns (constants)
+    X2 = stage2[x2_cols].astype(float)
+    variances = X2.var()
+    x2_cols_kept = [c for c in x2_cols if variances[c] > 1e-10]
+    X2 = X2[x2_cols_kept].values
     y2 = stage2["scope1_diff_pct"].values
     X2c = sm.add_constant(X2)
     ols = sm.OLS(y2, X2c).fit(cov_type="cluster",
@@ -86,7 +90,11 @@ def main() -> None:
     print("=" * 60)
     print("STAGE 2 — Panel OLS with Heckman IMR correction")
     print("=" * 60)
-    print(ols.summary(xname=["const"] + x2_cols))
+    param_names = ["const"] + x2_cols_kept
+    if len(param_names) == len(ols.params):
+        print(ols.summary(xname=param_names))
+    else:
+        print(ols.summary())
 
     # Bootstrap 95% CI (B=2000, block by firm)
     print("\n=== Bootstrap 95% CI (B=2000, block by firm) ===")
@@ -96,19 +104,23 @@ def main() -> None:
     for _ in range(2000):
         sampled = rng.choice(firms, size=len(firms), replace=True)
         boot_df = pd.concat([stage2[stage2["stock_code"] == f] for f in sampled])
-        Xb = boot_df[x2_cols].astype(float).values
+        Xb = boot_df[x2_cols_kept].astype(float).values
         yb = boot_df["scope1_diff_pct"].values
         try:
             b = sm.OLS(yb, sm.add_constant(Xb)).fit().params
-            beta_boot.append(b)
+            if len(b) == len(param_names):
+                beta_boot.append(b)
         except Exception:
             pass
     beta_boot = np.array(beta_boot)
+    if len(beta_boot) == 0:
+        print("[warn] bootstrap empty")
+        return
     ci_lower = np.percentile(beta_boot, 2.5, axis=0)
     ci_upper = np.percentile(beta_boot, 97.5, axis=0)
 
     boot_df = pd.DataFrame({
-        "var": ["const"] + x2_cols,
+        "var": param_names,
         "beta": ols.params,
         "se": ols.bse,
         "ci_lower_boot": ci_lower,
@@ -124,7 +136,10 @@ def main() -> None:
         f.write("STAGE 1 PROBIT:\n\n")
         f.write(str(probit.summary()))
         f.write("\n\nSTAGE 2 OLS + IMR:\n\n")
-        f.write(str(ols.summary(xname=["const"] + x2_cols)))
+        try:
+            f.write(str(ols.summary(xname=param_names)))
+        except Exception:
+            f.write(str(ols.summary()))
         f.write("\n\nBOOTSTRAP 95% CI (B=2000, block by firm):\n\n")
         f.write(boot_df.to_string(index=False))
 
