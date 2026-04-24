@@ -117,10 +117,15 @@ def load_esg_parsed() -> pd.DataFrame:
     path = INT / "esg_reports_parsed.csv"
     if not path.exists():
         return pd.DataFrame(columns=["stock_code", "year"])
-    df = pd.read_csv(path, dtype={"stock_code": str})
+    df = pd.read_csv(path)
     if df.empty:
         return df
-    df["stock_code"] = df["stock_code"].str.zfill(6)
+    # Parser's 'corp_code' column is actually the stock_code folder name
+    if "corp_code" in df.columns and "stock_code" not in df.columns:
+        df = df.rename(columns={"corp_code": "stock_code"})
+    df["stock_code"] = df["stock_code"].astype(str).str.zfill(6)
+    # Filter to HIGH/MEDIUM confidence; LOW noted but not used for merge
+    df = df[df["parse_success"] == True]
     return df
 
 
@@ -175,18 +180,23 @@ def build() -> pd.DataFrame:
     # --- Merge ESG parsed by stock_code × year ---
     if not esg.empty:
         esg_keep = ["stock_code", "year"]
-        for c in ["scope1_tco2eq", "scope1_confidence", "scope2_location",
-                  "scope2_market", "scope3_total", "assurance_provider",
-                  "assurance_standard", "assurance_level", "reporting_standard",
-                  "organizational_boundary"]:
+        col_map = {
+            "scope1_tco2eq": "esg_scope1_tco2eq",
+            "scope1_confidence": "esg_scope1_confidence",
+            "scope2_location_tco2eq": "esg_scope2_location",
+            "scope2_market_tco2eq": "esg_scope2_market",
+            "scope3_present": "esg_scope3_present",
+            "assurance_provider": "assurance_provider",
+            "assurance_standard": "assurance_standard",
+            "assurance_level": "assurance_level",
+            "reporting_standard": "reporting_standard",
+            "organizational_boundary": "organizational_boundary",
+            "third_party_assurance": "third_party_assurance",
+        }
+        for c in col_map.keys():
             if c in esg.columns:
                 esg_keep.append(c)
-        esg_slim = esg[esg_keep].rename(columns={
-            "scope1_tco2eq": "esg_scope1_tco2eq",
-            "scope2_location": "esg_scope2_location",
-            "scope2_market": "esg_scope2_market",
-            "scope3_total": "esg_scope3_total",
-        })
+        esg_slim = esg[esg_keep].rename(columns=col_map)
         gir_gold = gir_gold.merge(esg_slim, on=["stock_code", "year"], how="left")
 
     # --- Compute discrepancy metrics ---

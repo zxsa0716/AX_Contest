@@ -45,21 +45,35 @@ def main() -> None:
     df = df.set_index(["stock_code", "year"])
     df["year_dummy"] = df.index.get_level_values("year")
 
-    # Formula
-    X = df[["ln_gir", "in_kssb_30"]].astype(float)
-    X = X.dropna()
-    y = df.loc[X.index, "disc_pct"].dropna()
-    X = X.loc[y.index]
+    # Align X and y — drop any row with NaN in any required col
+    needed = ["ln_gir", "in_kssb_30", "disc_pct"]
+    data = df[needed].dropna()
+    # Need at least 2 years per firm for entity effects
+    firm_counts = data.groupby(level=0).size()
+    valid_firms = firm_counts[firm_counts >= 2].index
+    data = data[data.index.get_level_values(0).isin(valid_firms)]
 
+    y = data["disc_pct"]
+    X = data[["ln_gir", "in_kssb_30"]].astype(float)
     print(f"Regression N: {len(y)}, firms: {y.index.get_level_values(0).nunique()}")
     try:
-        mod = PanelOLS(y, X, entity_effects=True, time_effects=True)
+        mod = PanelOLS(y, X, entity_effects=True, time_effects=True,
+                       drop_absorbed=True)
         res = mod.fit(cov_type="clustered", cluster_entity=True)
         print(res.summary)
         with open(OUT / "regression_results.txt", "w", encoding="utf-8") as f:
             f.write(str(res.summary))
     except Exception as e:
         print(f"[err] regression failed: {e}")
+        # Fallback: simple OLS without entity effects
+        import statsmodels.api as sm
+        Xc = sm.add_constant(X.reset_index(drop=True))
+        y2 = y.reset_index(drop=True)
+        res = sm.OLS(y2, Xc).fit(cov_type="HC3")
+        print("\n=== Fallback OLS (no FE) ===")
+        print(res.summary())
+        with open(OUT / "regression_results.txt", "w", encoding="utf-8") as f:
+            f.write(str(res.summary()))
 
 
 if __name__ == "__main__":
