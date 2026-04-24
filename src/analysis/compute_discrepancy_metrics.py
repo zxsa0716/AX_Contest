@@ -117,13 +117,15 @@ def main() -> None:
         for k, v in em.items():
             m[f"esg_{k}"] = v
 
-        # Satellite NO2 trend
-        if "no2_mean" in grp.columns:
-            nm = compute_mk(grp["no2_mean"])
+        # Satellite NO2 trend — prefer ERA5-residualized signal if available
+        no2_col = "no2_resid" if "no2_resid" in grp.columns and grp["no2_resid"].notna().sum() >= 3 else "no2_mean"
+        if no2_col in grp.columns:
+            nm = compute_mk(grp[no2_col])
         else:
             nm = {"tau": np.nan, "p": np.nan, "trend": "insufficient", "n": 0}
         for k, v in nm.items():
             m[f"no2_{k}"] = v
+        m["no2_source"] = no2_col
 
         # ODIAC trend
         if "odiac_sum_tC_year" in grp.columns:

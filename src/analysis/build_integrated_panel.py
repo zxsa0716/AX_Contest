@@ -67,16 +67,17 @@ def load_gold_sites() -> pd.DataFrame:
 
 
 def load_satellite_yearly() -> pd.DataFrame:
-    path = INT / "satellite_panel_201901_202312.csv"
+    # Prefer residualized panel if exists (ERA5-corrected)
+    resid_path = INT / "satellite_panel_residuals.csv"
+    path = resid_path if resid_path.exists() else (INT / "satellite_panel_201901_202312.csv")
     df = pd.read_csv(path, on_bad_lines="skip", low_memory=False)
-    # Aggregate monthly → yearly per site
     grp_cols = [c for c in ["company_id", "site_id", "industry", "year"] if c in df.columns]
     numeric = ["no2_mean", "so2_mean", "co_mean", "hcho_mean",
+               "no2_resid", "so2_resid", "co_resid", "hcho_resid",
                "era5_u10", "era5_v10", "era5_t2m", "era5_tp", "era5_ws10",
                "era5_blh", "merra2_pbltop", "merra2_ps", "merra2_disph", "merra2_qv2m"]
     numeric = [c for c in numeric if c in df.columns]
     agg = df.groupby(grp_cols, as_index=False)[numeric].mean()
-    # Now aggregate across sites within a company (if multiple sites)
     agg2 = agg.groupby(["company_id", "year"], as_index=False)[numeric].mean()
     return agg2
 
