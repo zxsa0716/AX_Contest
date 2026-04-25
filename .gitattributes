@@ -1,0 +1,23 @@
+# Auto-detect text files; normalize line endings
+* text=auto eol=lf
+
+# Force binary for these
+*.png binary
+*.pdf binary
+*.xlsx binary
+*.xls binary
+*.parquet binary
+*.tif binary
+*.tif.gz binary
+*.gz binary
+
+# Korean text files explicit utf-8
+*.md text eol=lf
+*.py text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Jupyter
+*.ipynb text eol=lf
