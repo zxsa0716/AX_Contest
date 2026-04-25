@@ -264,27 +264,36 @@ def fig_4channel_concept():
 
 
 def fig_posco_no2_timeseries():
+    """4 industrial heavy emitter NO2 time series (POSCO 005490, 현대제철 004020,
+    SK하이닉스 000660, 삼성전자 005930) — actual industrial sites only."""
     setup_style()
     df = pd.read_csv(PANEL_RES, on_bad_lines="skip", low_memory=False)
-    posco_sites = df[df["site_id"].str.contains("POSCO", na=False)]
-    if posco_sites.empty:
-        print("[skip] no POSCO sites in panel"); return
-    fig, axes = plt.subplots(2, 1, figsize=(13, 8), sharex=True)
-    for ax, site_id in zip(axes, posco_sites["site_id"].unique()):
-        sub = df[df["site_id"] == site_id].sort_values(["year", "month"])
+    # site_id pattern: {stock_short}_0001
+    targets = [
+        ("5490_0001", "POSCO 포항제철소", "#000000"),
+        ("4020_0001", "현대제철 인천공장", "#D55E00"),
+        ("660_0001",  "SK하이닉스 이천", "#0072B2"),
+        ("5930_0001", "삼성전자 수원/화성", "#009E73"),
+    ]
+    fig, axes = plt.subplots(2, 2, figsize=(14, 9), sharex=True)
+    for ax, (sid, label, color) in zip(axes.flatten(), targets):
+        sub = df[df["site_id"] == sid].sort_values(["year", "month"])
+        if sub.empty:
+            ax.set_title(f"{label} (데이터 없음)"); continue
         sub["date"] = pd.to_datetime(sub["year"].astype(str) + "-" + sub["month"].astype(str) + "-01")
-        ax.plot(sub["date"], sub["no2_mean"] * 1e6, "-", color="#444444",
-                label="원시 NO₂ (µmol/m²)", alpha=0.7)
-        ax.plot(sub["date"], sub["no2_resid"] * 1e6, "-", color="#D55E00",
-                label="ERA5 보정 잔차", alpha=0.85, linewidth=1.5)
-        ax.set_ylabel("NO₂ 컬럼 (µmol/m²)")
-        ax.set_title(f"{site_id}")
-        ax.legend(loc="upper right", fontsize=9)
+        ax.plot(sub["date"], sub["no2_mean"] * 1e6, "-", color="#999999",
+                label="원시 NO₂ (µmol/m²)", alpha=0.7, linewidth=1)
+        ax.plot(sub["date"], sub["no2_resid"] * 1e6, "-", color=color,
+                label="ERA5 보정 잔차", alpha=0.9, linewidth=1.8)
+        ax.axhline(0, color="black", linestyle=":", alpha=0.4, linewidth=0.5)
+        ax.set_ylabel("NO₂ (µmol/m²)")
+        ax.set_title(label, fontweight="bold")
+        ax.legend(loc="best", fontsize=8)
         ax.grid(True, alpha=0.3)
-    axes[-1].set_xlabel("연-월")
-    plt.suptitle("그림 F. POSCO 포항 vs 광양 NO₂ 시계열 (2019-2023, ERA5 보정 전후)", y=1.00)
+    plt.suptitle("그림 F. 4대 산업시설 NO₂ 시계열 (2019-2023, ERA5 보정 전후)\n"
+                 "회색=원시 신호, 컬러=기상보정 잔차 (배출 활동 신호)", y=1.00, fontsize=12)
     plt.tight_layout()
-    out = FIGS / "fig_posco_no2_timeseries.png"
+    out = FIGS / "fig_industrial_no2_timeseries.png"
     plt.savefig(out, dpi=300, bbox_inches="tight"); plt.close()
     print(f"[saved] {out}")
 
