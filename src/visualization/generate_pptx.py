@@ -1079,6 +1079,181 @@ GitHub: https://github.com/zxsa0716/AX_Contest
 **감사합니다**""",
         FIGS / "fig_concept_4channel.png")
 
+    # ============ DECK 6: 23개사 심층 분석 (10) ============
+    _add_title_slide(prs,
+        "Part 6 — 23개사 산업별 심층 분석",
+        "패턴 분류 결과의 사업 맥락 해석 + 8 신규 시각화")
+
+    _add_content_slide(prs,
+        "Sentinel-5P 4종 위성 신호 한국 분포 (2023)",
+        """**4 panel 비교**
+- NO₂ (위, 좌): 산업·교통 NOx 배출 추적자
+- SO₂ (위, 우): 화력발전·제철 특화
+- CO (아래, 좌): 불완전 연소 (장수명)
+- HCHO (아래, 우): 석유화학 VOC
+
+**관찰**
+- NO₂: 수도권·울산·여수·포항 hotspot
+- SO₂: 한정된 석탄·제철 cluster
+- CO: 광범위 (수송 + 산업)
+- HCHO: 여수·울산 석유화학 단지 집중
+
+**해석**
+4 species 동시 비교로 산업 특성에 맞는
+위성 채널 선택 가능 (예: 철강은 NO₂+SO₂)""",
+        FIGS / "fig_s5p_4species_korea.png")
+
+    _add_content_slide(prs,
+        "ODIAC CO₂ 2019 vs 2023 변화 (한국 전체)",
+        """**3 panel 비교**
+- 좌: 2019-07 ODIAC
+- 중: 2023-07 ODIAC
+- 우: 차이 (2023-2019, 빨강=증가)
+
+**관찰**
+- 수도권 일부 영역 증가 (데이터센터·인구)
+- 일부 산업단지 감소 (탈탄소 효과)
+- 전국 합산은 약간 감소 추세
+
+**시사점**
+ODIAC 1km 해상도로 firm-level 변화 가시화
+패턴 D firms (포스코·삼성전자)의 하강 추세
+ODIAC 데이터로 일관 확인됨""",
+        FIGS / "fig_odiac_change_2019_2023.png")
+
+    _add_content_slide(prs,
+        "업종별 GIR 5년 추이 (6 산업군)",
+        """**6 panel: 업종별 firm 시계열**
+- steel (POSCO, 현대제철)
+- petrochem (롯데케미칼, 한화솔루션, LG엔솔)
+- power_coal (KEPCO, SK이노)
+- semiconductor (삼성전자, SK하이닉스, LGD)
+- finance (네이버, KT, 삼성생명, IBK)
+- other (나머지)
+
+**산업별 패턴 차이**
+- steel: 절대값 큰 변동 (수출 시황)
+- petrochem: 일반적 감소 추세
+- finance: Scope 1 미미, 안정
+- semicon: 사업 확장 + 효율 trade-off""",
+        FIGS / "fig_industry_timeseries.png")
+
+    _add_content_slide(prs,
+        "23개사 4채널 정규화 추이 (2019=100)",
+        """**Small multiples grid (5×5)**
+- 모든 23 firms 한 화면 비교
+- GIR(검정)·ESG(회색)·NO₂(주황)·ODIAC(파랑)
+- 2019=100으로 정규화 → 변화율 비교
+
+**시각적 발견**
+- 포스코홀딩스: GIR↑↑ vs 위성↓↓ 명확
+- 삼성전자: ESG가 가장 가파른 상승
+- 네이버: 4채널 모두 상승 (확장)
+- 대부분 firms: 위성·ODIAC 동반 하락
+- 금융 firms: GIR/ESG 변동 미미
+
+→ 산업별 다양성 + 공통 추세 동시 가시화""",
+        FIGS / "fig_all23_normalized.png")
+
+    _add_content_slide(prs,
+        "포스코홀딩스 4중 비교 디테일",
+        """**4 panel (각 trend line + R²)**
+- GIR 법정: τ=+1.00 완벽 상승
+- ESG 자체: τ=+0.67 상승
+- 위성 NO₂: τ=-1.00 완벽 하강
+- ODIAC CO₂: τ=-1.00 완벽 하강
+
+**해석 (단정 회피)**
+가설 1: 보고경계 확장 (해외 자회사)
+가설 2: Scope 정의 변경 reclassification
+가설 3: 효율 개선 + 보고 시차
+
+**KSSB 2028 권고**
+포스코홀딩스 우선 검증 1순위 지정
+환경부 + KEITI 합동 현장 점검
+GIR-ESG 교차 검증 + 위성 데이터 활용""",
+        FIGS / "fig_posco_4channel_detail.png")
+
+    _add_content_slide(prs,
+        "Heckman 회귀 계수 Forest Plot",
+        """**Bootstrap 95% CI 시각화**
+- 주황: 유의 (CI가 0 미포함)
+- 회색: 비유의
+
+**유의한 계수**
+- ln(GIR): -2.00 [-8.93, -0.21]
+- yr_2021: +11.49 [+0.13, +32.98]
+
+**비유의 그러나 시사점 있는 계수**
+- IMR: -12.69 (선택편향 borderline)
+- 산업·연도 dummies (대부분)
+
+**해석**
+대기업일수록 괴리율 낮음
+2021년 코로나 회복기 일시적 괴리 급증
+산업별 차이는 sample 한계로 강한 결론 X""",
+        FIGS / "fig_heckman_forest.png")
+
+    _add_content_slide(prs,
+        "이상탐지 2D 분포 (괴리 × 위성 불일치)",
+        """**X축**: GIR-ESG 괴리도
+**Y축**: GIR-위성·ODIAC 불일치도
+
+**우상단: 즉시 검증 대상**
+- 포스코홀딩스 (D 패턴, 큰 점)
+- 삼성전자 (D 패턴)
+- 현대모비스 (C 패턴)
+
+**좌하단: 정상 권역**
+- A_consistent_down 12개사 다수
+- 금융·서비스 firms
+
+**우하단: 위성만 불일치**
+- 일부 산업 firms (본사 좌표 한계)
+
+**좌상단: 공시 채널만 불일치**
+- mixed 패턴 firms (부분 일치)""",
+        FIGS / "fig_anomaly_2d.png")
+
+    _add_content_slide(prs,
+        "업종별 괴리율 분포 (Box Plot)",
+        """**6 산업군 GIR-ESG 괴리율**
+
+(ESG − GIR) / GIR × 100 (%)
+
+**분포 특징**
+- steel: 중앙값 0 근처, 변동 작음
+- petrochem: 양의 편향 (ESG 더 큼)
+- finance: 큰 변동 (Scope 1 작아 비율 큼)
+- semicon: 양의 편향 (사업 확장)
+- power_coal: 음의 편향 (KEPCO 효과)
+- other: 가장 큰 변동
+
+**시사점**
+산업 특성별 공시 패턴 차이 확인
+KSSB 의무공시 시행 시 산업별
+검증 가이드라인 차별화 필요""",
+        FIGS / "fig_industry_boxplot.png")
+
+    _add_content_slide(prs,
+        "Part 6 결론: 4가지 산업별 인사이트",
+        """**1. D 패턴은 철강+반도체 두 산업에만**
+   포스코·삼성전자 — 절대 배출 큼 + 사업구조 변화 활발
+
+**2. C 패턴은 현대모비스 단 1건**
+   ESG 보고 범위 확대 시점 변동성 가설
+
+**3. 위성 NO₂ 12개 firm 단조 하강**
+   한국 정부 NOx 감축 정책 (2017-2022) 효과
+   산업별 차이 < 정책 공통 효과
+
+**4. 금융·서비스 firms (네이버 제외) 경계 사례**
+   Scope 1 미미 + 도시 배경 매몰
+   → Scope 2·3 검증이 더 중요한 의제
+
+**핵심**: 본 4중 비교 프레임은 산업·중공업
+firms에서 가장 강력한 진단력 제공""")
+
     prs.save(OUT)
     print(f"[saved] {OUT}")
     print(f"Total slides: {len(prs.slides)}")
