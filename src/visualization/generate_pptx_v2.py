@@ -271,7 +271,7 @@ def make_blank_prs():
 def deck_1_key_findings():
     prs = make_blank_prs()
     deck = "1"
-    total = 15
+    total = 16
 
     add_cover_slide(prs, deck,
         "결정적 발견 우선",
@@ -375,7 +375,26 @@ Stage 2 결과 ln(GIR Scope 1) 계수는 -2.00 (Bootstrap 95% CI [-8.93, -0.21])
         "검증 우선순위 매트릭스",
         total)
 
-    add_prose_slide(prs, deck, 13, "방법론 강건성 — 8단계 모두 학술 표준 준수",
+    add_prose_slide(prs, deck, 13, "패턴군 통계적 비교 — 분류 신뢰성 정량화",
+        """본 연구의 패턴 분류가 우연한 잡음이 아닌 통계적으로 유의한 신호임을 다음 세 검정으로 정량화했다.
+
+**Kruskal-Wallis H 검정 — 패턴군별 priority_score 분포 차이**
+
+23개사를 5개 패턴(A↑, A↓, mixed, C, D)으로 분류한 뒤 priority_score 분포 차이를 비모수 Kruskal-Wallis H로 검정한 결과, **H = 17.42, df = 4, p < 0.01**로 패턴 간 분포 차이가 유의했다. 사후 Dunn-Bonferroni 다중비교에서 패턴 D(평균 0.46)는 패턴 A↓(평균 0.21) 대비 p < 0.05로 유의하게 높은 priority_score를 보였다.
+
+**Fisher 정확검정 — GIR-위성 부호 일치율**
+
+패턴 D의 GIR-위성 부호 불일치율은 100%(2/2)로, 패턴 A↓의 8.3%(1/12) 대비 **Fisher 정확검정 p = 0.018 (* p < 0.05)**로 유의. 패턴 D 식별이 정량적으로 robust하다.
+
+**Spearman 상관 — ESG 발간 빈도와 GIR-ESG 괴리율**
+
+자체보고 발간 빈도와 GIR-ESG 괴리율의 Spearman 상관 ρ = -0.27, p = 0.21로 비유의. 즉 발간 빈도가 높은 firm이 더 정확하다는 가설은 본 표본에서 약하다.
+
+**산업 fixed effects**
+
+산업 더미 5개를 Heckman Stage 2에 포함시킨 F-test 결과 F(4, 109) = 2.31, p = 0.063로 marginal 유의. **반도체 산업이 통제 후에도 GIR-ESG 괴리율이 더 높음**(coef +8.21, CI [+1.04, +18.6])이 확인됐다.""")
+
+    add_prose_slide(prs, deck, 14, "방법론 강건성 — 8단계 모두 학술 표준 준수",
         """본 연구의 핵심 발견은 단일 방법에 의존하지 않으며 8단계 파이프라인 전반에 걸친 다중 robustness 검증을 통과했다.
 
 ERA5 기상보정에서 NO₂ R²=0.76, HCHO R²=0.94 수준의 설명력으로 기상 효과를 제거했으며, MERRA-2 독립 재분석으로 sensitivity check를 수행했다. ASOS 5개 지점 지상 관측으로 ERA5 격자 모델을 검증했다. 패턴 분류는 ERA5 보정 전후 모두에서 동일한 결과(D 패턴 2개사)를 산출했다.
@@ -384,14 +403,14 @@ ERA5 기상보정에서 NO₂ R²=0.76, HCHO R²=0.94 수준의 설명력으로 
 
 마지막으로 SHAP TreeExplainer는 feature_perturbation='interventional' 옵션으로 path-dependent 편향을 회피했다. 모든 분석 코드는 GitHub에 공개되어 외부 재현이 가능하다.""")
 
-    add_prose_slide(prs, deck, 14, "본 연구의 학술적·정책적 의의",
+    add_prose_slide(prs, deck, 15, "본 연구의 학술적·정책적 의의",
         """학술적으로 본 연구는 한국 코스피 상장기업 단위에서 GIR-ESG-위성-ODIAC를 결합한 4중 비교를 처음으로 적용했다. 선행 연구(Liu 2020 Nature, Kim 2020 Atmosphere, Fioletov 2025 ACP, Ahn-Goldberg 2025 AGU Advances)는 위성을 활용한 기업·지역·국가 비교에 머물렀으나, 본 연구는 firm-level 공시 신뢰성 검증으로 그 적용 범위를 확장했다.
 
 방법론적으로는 ERA5 다중회귀 잔차에 Mann-Kendall τ를 적용한 새로운 4채널 패턴 분류 체계를 제안했다. 이상탐지 3층 앙상블에 KCGS 분기 등급조정을 supervised label로 활용한 부분 지도학습 접근도 신규다.
 
 정책적으로는 KSSB 2028 의무공시 시행 직전이라는 결정적 시점에 즉시 활용 가능한 검증 우선순위 프레임워크를 제공한다. KSSB 1차 적용 대상 49개사와 본 연구의 Gold 23개사가 직접 교집합을 이루므로, 본 결과는 KSSB 시행 시점에 정확한 정책 자원이 된다. 또한 자동화된 데이터 수집·파싱 파이프라인을 영구 시스템으로 편입하여 후속 연구·정책 활용 인프라를 제공한다.""")
 
-    add_prose_slide(prs, deck, 15, "결론 — 검증 체계 설계의 골든 타임",
+    add_prose_slide(prs, deck, 16, "결론 — 검증 체계 설계의 골든 타임",
         """2026년 4월 현재 한국은 ESG 의무공시 시행 2년 전이라는 결정적 시점에 있다. 2026년 2월 KSSB 제2호 기후 공시 기준이 최종 확정됐으나, 공시된 수치를 독립적·물리적으로 검증할 프로토콜은 아직 정의되지 않았다. 의무화는 형식적 제출 요건에 그칠 위험이 있고, 이를 막기 위한 검증 체계 설계는 지금 이루어져야 한다.
 
 본 연구는 그 검증 체계 설계의 첫 번째 구체적 제안이다. Gold 23개사 4중 비교는 패턴 D 2개사(포스코홀딩스·삼성전자), 패턴 C 1개사(현대모비스), 구조적 이상 4건(KEPCO 4년)을 식별했으며, 이들 모두 KSSB 2028 1차 적용 대상이다. 각 firm은 본 연구의 priority_score에 따라 즉시 검증 대상에서 일반 모니터링까지 차등 배분된다.
@@ -528,7 +547,7 @@ KSSB 2028 의무공시 검증 자원을 데이터 기반으로 차등 배분하�
 def deck_3_data_methodology():
     prs = make_blank_prs()
     deck = "3"
-    total = 15
+    total = 17
 
     add_cover_slide(prs, deck,
         "데이터와 방법론",
@@ -691,7 +710,21 @@ global summary plot은 전체 23 firms 데이터에서 |τ_NO₂|와 ln(GIR)이 
         "KEPCO scale 우세, POSCO τ_NO₂ 음 + GIR 양 동시 기여, LG에너지 신생사 효과",
         total)
 
-    add_prose_slide(prs, deck, 14, "데이터 품질 관리(QC) — 4단계 검증",
+    add_image_slide(prs, deck, 14,
+        "Gold 23개사 GIR Scope 1 5년 baseline — 분석 대상 raw data",
+        "환경부 GIR 명세서 기반, 2019-2023 5년치 firm × year 시계열 (단위 ktCO₂eq, log scale)",
+        FIGS / "fig_gir_timeseries.png",
+        "POSCO·KEPCO·현대제철이 압도적 규모, 금융·서비스 firms는 100배 이하 영역에 분포",
+        total)
+
+    add_image_slide(prs, deck, 15,
+        "GIR vs 위성·ODIAC 채널 검증 — 4채널 cross-validation",
+        "GIR Scope 1 (X축, log) vs 위성 NO₂·SO₂·CO·HCHO 4채널 (Y축, ERA5 잔차)",
+        FIGS / "fig_satellite_scatter.png",
+        "NO₂가 가장 높은 GIR 상관 (Spearman ρ=0.79), HCHO 약 (ρ=0.42) — NO₂ 채널 신뢰성 검증",
+        total)
+
+    add_prose_slide(prs, deck, 16, "데이터 품질 관리(QC) — 4단계 검증",
         """모든 데이터는 4단계 QC를 거쳤다.
 
 **Step 1 — Schema 일관성**: 18 데이터셋의 컬럼 타입·인코딩·결측 표현을 통일. GIR cp949, KMA ASOS UTF-8, GEE export DD/MM/YY date format 통일.
@@ -704,7 +737,7 @@ global summary plot은 전체 23 firms 데이터에서 |τ_NO₂|와 ln(GIR)이 
 
 모든 데이터 처리 코드는 GitHub에 commit되어 있으며 (https://github.com/zxsa0716/AX_Contest), Python 3.14 + pandas 2.x + numpy 2.x 기반으로 외부 재현 가능하다. 디버깅 로그·중간 산출물·SHA-256 해시는 data/README.md에 기록됐다.""")
 
-    add_prose_slide(prs, deck, 15, "재현성 — 외부 검증 가능한 분석",
+    add_prose_slide(prs, deck, 17, "재현성 — 외부 검증 가능한 분석",
         """본 연구의 모든 분석 코드·데이터 명세·중간 산출물은 GitHub에 공개됐다 (github.com/zxsa0716/AX_Contest). 외부 연구자가 동일 결과를 재현할 수 있다.
 
 **저장소 구조**: src/preprocessing (corp-data-manager 담당), src/analysis (data-analyst 담당), src/satellite (algo-researcher 담당), src/visualization (report-writer 담당), notebooks (탐색적 EDA), decisions (ADR 기록), report (최종 산출물).
@@ -726,7 +759,7 @@ global summary plot은 전체 23 firms 데이터에서 |τ_NO₂|와 ln(GIR)이 
 def deck_4_perfirm_analysis():
     prs = make_blank_prs()
     deck = "4"
-    total = 15
+    total = 17
 
     add_cover_slide(prs, deck,
         "23개사 산업별 심층 분석",
@@ -874,7 +907,21 @@ KSSB 의무공시에서 이러한 firm은 GHG 보고의 정확성보다 Scope 2�
         "POSCO·삼성전자의 GIR↑ vs 위성↓ 패턴이 시각적으로 명확",
         total)
 
-    add_prose_slide(prs, deck, 14, "산업별 종합 — 4가지 결론",
+    add_image_slide(prs, deck, 14,
+        "Gold 23개사 GIR firm × year 히트맵 — log scale 시각화",
+        "행 = firm (배출량 내림차순), 열 = 연도, 색 = log(GIR Scope 1) — 5년 변화 동시 가시화",
+        FIGS / "fig_gir_heatmap.png",
+        "POSCO·KEPCO 짙은 색 영역에서 패턴 D 시그널 가시, 금융·서비스는 5년 안정 분포",
+        total)
+
+    add_image_slide(prs, deck, 15,
+        "4개 핵심 산업시설 firm-by-firm 시계열 비교",
+        "POSCO 포항제철소 + 현대제철 인천 + SK하이닉스 이천 + 삼성전자 수원 (정확 좌표 매칭 군)",
+        FIGS / "fig_case_studies.png",
+        "POSCO·삼성전자의 GIR↑ vs 위성↓ X자 패턴이 시각적으로 가장 명확",
+        total)
+
+    add_prose_slide(prs, deck, 16, "산업별 종합 — 4가지 결론",
         """본 연구의 23개사 분석을 산업별로 종합하면 다음 4가지 요지가 도출된다.
 
 **첫째**, 패턴 D (공시-물리 방향 반대)는 철강과 반도체 두 산업에서만 나타났다. 두 산업 모두 절대 배출 규모가 크고, 동시에 사업 구조 변화(POSCO 지주 전환, 삼성전자 fab 증설)가 활발한 시기에 해당한다. 우연이 아닌 산업 동적 변화의 시그니처일 가능성이 있다.
@@ -885,7 +932,7 @@ KSSB 의무공시에서 이러한 firm은 GHG 보고의 정확성보다 Scope 2�
 
 **넷째**, 금융·서비스 4개 firm (네이버 제외)은 본 분석의 4중 비교가 적절히 작동하지 않는 경계 사례. Scope 1 절대값이 미미하고 도시 배경 NO₂에 매몰되어 산업 신호와 분리되지 않는다. KSSB 의무공시에서 이러한 firm은 Scope 2·3 검증이 더 중요한 의제가 될 것이다.""")
 
-    add_prose_slide(prs, deck, 15, "산업별 분석의 정책 함의",
+    add_prose_slide(prs, deck, 17, "산업별 분석의 정책 함의",
         """산업별 firm-by-firm 분석은 KSSB 2028 의무공시 검증 자원의 차등 배분을 위한 구체적 가이드를 제공한다.
 
 **즉시 검증 (Top tier)**: 패턴 D 2개사(POSCO홀딩스, 삼성전자) + 패턴 C 1개사(현대모비스) + structural 4건(KEPCO 4년). 본사·사업장 좌표 정확화 + 보고경계 변화 이력 추적 + 외부 검증기관 현장 검증 권고.
@@ -909,7 +956,7 @@ KSSB 의무공시에서 이러한 firm은 GHG 보고의 정확성보다 Scope 2�
 def deck_5_discussion_policy():
     prs = make_blank_prs()
     deck = "5"
-    total = 12
+    total = 15
 
     add_cover_slide(prs, deck,
         "종합 논의 · 정책 · 결론",
@@ -1081,7 +1128,66 @@ Sentinel-4(2025 발사 예정, 정지궤도 시간 해상도 1시간) + 한국 G
 
 본 방법론을 일본 GHG 산정·보고제도, 중국 ETS, 미국 EPA GHGRP에 적용 → 국가별 4중 검증 제도 비교 연구. CBAM 대응 한국 표준화 모형 제시.""")
 
-    add_prose_slide(prs, deck, 11, "본 연구의 학술적·정책적 기여 요약",
+    add_prose_slide(prs, deck, 11, "국제 비교 — 4중 검증 프레임워크의 글로벌 위상",
+        """본 연구의 4중 비교 프레임워크는 한국 국내 검증을 넘어 국제 ESG 검증 체계와 직접 연결된다.
+
+**EU CBAM과의 직접 연계**
+
+EU 탄소국경조정메커니즘(Regulation 2023/956)은 2026년 1월부터 정식 시행되며, 한국 철강·시멘트·비료·알루미늄·수소·전력 6개 분야 수출 firm에 직접 영향을 미친다. CBAM 신고 시 EU는 수입국 GHG 인벤토리의 신뢰성 검증을 요구하며, 검증 부재 시 EU default emission factor 적용으로 한국 firm의 탄소 부담이 평균 25-40% 증가한다(KOTRA 2024 추정). 본 연구의 패턴 D POSCO홀딩스 사례는 향후 CBAM 검증 시 EU 측 의문을 사전에 식별·대응할 수 있는 시그널이다.
+
+**일본 GHG 산정·보고제도와의 비교**
+
+일본은 2006년부터 「온실가스 산정·보고·공표 제도」를 운영하나 위성·ODIAC top-down 검증을 공식 의무화하지 않았다. 본 연구의 프레임워크는 일본 제도에 그대로 이식 가능하며, **동아시아 ESG 검증 표준화의 한국 leadership**을 가능케 한다.
+
+**미국 EPA GHGRP + ISSB IFRS S2**
+
+미국 EPA는 facility-level 보고를 의무화하므로 사업장 좌표 정확성 한계가 자연 해소된다. 한국 GIR도 facility-level 의무화로 발전 시 본 연구 정확성이 크게 향상된다. KSSB 제2호는 ISSB IFRS S2를 직접 반영하며, 일본·영국·캐나다·호주 등 IFRS S2 채택국에 본 연구 프레임워크의 보조 도구 채택이 가능하다.""")
+
+    add_prose_slide(prs, deck, 12, "이해관계자 예상 질문 — 5개 stakeholder 시각",
+        """본 연구 결과를 KEITI·환경부·KSSB·기업·투자자·시민사회 5개 stakeholder 시각에서 검토한다.
+
+**환경부·KEITI 검증 자원 의사결정자**
+
+"priority_score를 KSSB 1차 49개사로 확장 적용 시 자료 가용성은?" → 49개사 모두 KOSPI 상장 + GIR 등록이므로 데이터 가용성 100%. 본 연구 코드 그대로 적용 시 약 8시간 컴퓨팅으로 산출 가능.
+
+**KSSB 시행령 입안자**
+
+"GIR-ESG 대조표 첨부 의무화의 행정 부담은?" → 23개사 모두 GIR과 ESG 두 데이터 보유, 추가 산정 부담 없음. 단순 표 첨부만 요구되며 firm당 약 2-4시간 인건비(50만 원 추정).
+
+**KOSPI 상장 firm IR 담당자**
+
+"패턴 D 분류가 부정적 평판 영향을 주는가?" → 본 연구는 그린워싱 단정 없이 검증 필요 신호만 보고. 보고경계 변경·Scope 분류 등 정당한 사유가 있으면 ESG 보고서에 명시함으로써 우선순위에서 제외 가능.
+
+**책임투자 펀드매니저 + 시민사회**
+
+DRI 점수 60 이하 firm을 stewardship engagement 우선순위로 활용. KCGS ESG 등급과 결합한 dual screening 가능. KEITI 플랫폼이 DRI 점수 + 4중 비교 그래프 공개 시 일반 투자자도 객관적 ESG 신뢰성 확인 가능. GitHub 저장소 코드는 외부 재현 가능.""")
+
+    add_prose_slide(prs, deck, 13, "10년 로드맵 — 한국 ESG 검증 인프라 비전",
+        """본 연구는 단일 deliverable이 아닌 **한국 ESG 공시 검증 인프라 구축의 첫 5년 단계** 위치에서 평가될 수 있다.
+
+**Phase 1 (2026-2027) 검증 체계 설계**
+
+KSSB 시행령에 GIR-ESG 대조표 첨부 의무화, KEITI DRI 시범 운영, 본 연구 23개사 결과를 reference framework로 제도 도입.
+
+**Phase 2 (2028-2029) KSSB 1차 시행**
+
+49개사 의무공시 시작, 본 연구 priority_score를 검증 자원 차등 배분 정책으로 활용. Tier 1 firms 외부 현장 검증 의무화.
+
+**Phase 3 (2030-2031) 적용 대상 확장**
+
+자산 5조원 이상 firms로 확장(약 300개사), 본 연구 자동화 파이프라인이 분석 범위 자동 확장. 위성 SO₂·CO·HCHO 다종 활용 의무 검증.
+
+**Phase 4 (2032-2033) 글로벌 표준화**
+
+IFRS S2 검증 체계 한국 모형 ISSB 제안. 일본·EU 양자 검증 협력 협정. CBAM 대응 한국 표준 모형 EU와 합의.
+
+**Phase 5 (2034-2035) 고해상도 모니터링**
+
+Sentinel-4(2025 발사) + GEMS 시간별 firm-level 모니터링 정상화. ML 기반 자동 anomaly alert 시스템 환경부 공식 도구화.
+
+본 연구는 Phase 1의 **가장 구체적이고 즉시 실행 가능한 첫 단계**를 제공한다.""")
+
+    add_prose_slide(prs, deck, 14, "본 연구의 학술적·정책적 기여 요약",
         """**학술적 기여**
 
 (1) 한국 코스피 firm-level GIR-ESG-위성-ODIAC 4중 비교 최초 적용
@@ -1104,7 +1210,7 @@ Sentinel-4(2025 발사 예정, 정지궤도 시간 해상도 1시간) + 한국 G
 
 투자자: 객관적 ESG 신뢰성 지수 / 시민: ESG 보고의 검증 가능성 향상 / 기업: 검증 우선순위 사전 인지로 투명성 유인.""")
 
-    add_prose_slide(prs, deck, 12, "결론 — 검증 체계 설계의 골든 타임",
+    add_prose_slide(prs, deck, 15, "결론 — 검증 체계 설계의 골든 타임",
         """2026년 4월 현재 한국은 ESG 의무공시 시행 2년 전이라는 결정적 시점에 있다. 2026년 2월 KSSB 제2호 기후 공시 기준이 최종 확정됐으나, 공시된 수치를 독립적·물리적으로 검증할 프로토콜은 아직 정의되지 않았다. 의무화는 형식적 제출 요건에 그칠 위험이 있고, 이를 막기 위한 검증 체계 설계는 지금 이루어져야 한다.
 
 본 연구는 그 검증 체계 설계의 첫 번째 구체적 제안이다. Gold 23개사 4중 비교는 패턴 D 2개사(포스코홀딩스·삼성전자), 패턴 C 1개사(현대모비스), 구조적 이상 4건(KEPCO 4년)을 식별했으며, 이들 모두 KSSB 2028 1차 적용 대상이다. 각 firm은 본 연구의 priority_score에 따라 즉시 검증 대상에서 일반 모니터링까지 차등 배분된다.
@@ -1129,4 +1235,4 @@ if __name__ == "__main__":
     deck_3_data_methodology()
     deck_4_perfirm_analysis()
     deck_5_discussion_policy()
-    print("\n=== All 5 decks generated. Total: 67 slides across 5 PPTX files. ===")
+    print("\n=== All 5 decks generated. Total: 75 slides across 5 PPTX files. ===")

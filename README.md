@@ -150,11 +150,11 @@ pip install -r requirements.txt
 
 | Deck | 파일명 | 슬라이드 | 내용 |
 |---|---|---|---|
-| **Part 1** | `report/decks/01_KeyFindings.pptx` | 15 | 결정적 발견 우선 — 패턴 D 2건, 이상탐지 8건, Heckman, 우선순위, 정책 |
+| **Part 1** | `report/decks/01_KeyFindings.pptx` | 16 | 결정적 발견 우선 — 패턴 D 2건, 이상탐지 8건, Heckman, 패턴군 통계 비교, 우선순위, 정책 |
 | **Part 2** | `report/decks/02_Background.pptx` | 10 | 연구 배경 — 두 채널 ESG 문제, KSSB 2028, 검증 공백, 선행연구 |
-| **Part 3** | `report/decks/03_Data_Methodology.pptx` | 15 | 18 데이터셋 + 8단계 분석 파이프라인 학술 표준 상세 |
-| **Part 4** | `report/decks/04_PerFirm_Analysis.pptx` | 15 | 23개사 × 8 산업군 firm-by-firm narrative |
-| **Part 5** | `report/decks/05_Discussion_Policy.pptx` | 12 | 패턴 D 가설 3, 한계 4, robustness 8, 정책 카드 3, 향후 5 |
+| **Part 3** | `report/decks/03_Data_Methodology.pptx` | 17 | 18 데이터셋 + 8단계 분석 파이프라인 + GIR baseline + 4채널 cross-validation |
+| **Part 4** | `report/decks/04_PerFirm_Analysis.pptx` | 17 | 23개사 × 8 산업군 firm-by-firm + GIR heatmap + case studies |
+| **Part 5** | `report/decks/05_Discussion_Policy.pptx` | 15 | 패턴 D 가설 3, 한계 4, robustness 8, 정책 카드 3, 국제비교, stakeholder Q&A, 10년 로드맵, 결론 |
 
 **생성 명령**: `.venv\Scripts\python.exe src/visualization/generate_pptx_v2.py`
 
