@@ -50,6 +50,9 @@ desktop.ini
 
 # ─── Logs / temp ──────────────────────────────
 *.log
+*.pid
+logs/
+docs_cache/
 tmp/
 temp/
 scratch/

@@ -8,6 +8,8 @@
 
 > 한국 기업의 GIR 법정 배출량 × ESG 자체보고 × Sentinel-5P 위성 NO₂·SO₂·CO·HCHO × ODIAC CO₂를 4중 비교하여 공시 불일치 패턴을 식별하고, 2028년 KSSB 의무공시 검증체계 설계안을 제시하는 데이터 분석 프로젝트.
 
+**📋 [SUBMISSION.md](SUBMISSION.md)** — 최종 제출 인벤토리 (5종 deliverable + 폴더 구조 + 재현성 가이드)
+
 ---
 
 ## 🎯 핵심 결과
