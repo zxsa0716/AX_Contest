@@ -146,22 +146,6 @@ pip install -r requirements.txt
 
 ---
 
-## 🎤 발표 자료 (5 themed PPTX decks · 67 slides 합계)
-
-기존 단일 60 슬라이드 deck를 5개 thematic deck로 재구성. 각 deck는 단독으로도 완결되며, 발표 시간에 따라 유연 선택 가능. 모든 deck는 script-style flowing Korean prose + uncropped 고해상도 figures + 일관된 design token 적용.
-
-| Deck | 파일명 | 슬라이드 | 내용 |
-|---|---|---|---|
-| **Part 1** | `report/decks/01_KeyFindings.pptx` | 16 | 결정적 발견 우선 — 패턴 D 2건, 이상탐지 8건, Heckman, 패턴군 통계 비교, 우선순위, 정책 |
-| **Part 2** | `report/decks/02_Background.pptx` | 10 | 연구 배경 — 두 채널 ESG 문제, KSSB 2028, 검증 공백, 선행연구 |
-| **Part 3** | `report/decks/03_Data_Methodology.pptx` | 17 | 18 데이터셋 + 8단계 분석 파이프라인 + GIR baseline + 4채널 cross-validation |
-| **Part 4** | `report/decks/04_PerFirm_Analysis.pptx` | 17 | 23개사 × 8 산업군 firm-by-firm + GIR heatmap + case studies |
-| **Part 5** | `report/decks/05_Discussion_Policy.pptx` | 15 | 패턴 D 가설 3, 한계 4, robustness 8, 정책 카드 3, 국제비교, stakeholder Q&A, 10년 로드맵, 결론 |
-
-**생성 명령**: `.venv\Scripts\python.exe src/visualization/generate_pptx_v2.py`
-
----
-
 ## 📊 주요 산출물 (26 figures)
 
 | Figure | 내용 |
@@ -185,9 +169,9 @@ pip install -r requirements.txt
 @misc{ax_contest_2026,
   title  = {한국 코스피 상장기업 온실가스 공시 신뢰성 3중 검증:
             GIR × ESG × Sentinel-5P 위성 4중 비교와 KSSB 2028 의무공시 검증체계},
-  author = {Researcher},
+  author = {Heedo Choi},
   year   = {2026},
-  url    = {https://github.com/{your-username}/AX_contest_2026},
+  url    = {https://github.com/zxsa0716/AX_contest},
   note   = {2026 AX 아이디어 경진대회 자유분석 부문 응모작}
 }
 ```
